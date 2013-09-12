@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>Typed computation of logical terms inside a language with effects</title>
+</head>
+<body>
+<h1>Typed computation of logical terms inside a language with effects</h1>
+<h2>Antonis Stampoulis <br/>Zhong Shao</h2>
+
+<h3><em>(Published in ICFP 2010)</em></h3>
+
+<h3>Abstract</h3>
+<p>
+In this paper, we propose a novel language design that couples a
+type-safe effectful computational language with first-class support
+for logical terms like propositions and proofs. We propose this
+language in order to mitigate what we perceive as a weakness of current proof
+assistants like Coq and Isabelle: the lack of a single language where
+users can develop complex tactics and decision procedures in a
+typeful manner and using a rich programming model. This limits the scalability
+of the proof development process, as users avoid developing
+domain-specific tactics and decision procedures.
+</p>
+
+<p>
+The main idea behind our design is to integrate a logical framework
+similar to the one supported by such proof assistants inside the type
+system of a computational language inspired by ML. The language design
+is such that the added features are orthogonal to the rest of the
+computational language, and also does not require significant additions
+to the logic language, so soundness is guaranteed. We argue for the
+applicability of our approach by showing a number of examples of use.
+</p>
+
+[ <a href="paper.pdf">short version</a> | <a href="TR.pdf">extended version</a> | <a href="veriml-0.1.tar.gz">prototype implementation</a> | <a href="../slides/icfp2010.pdf">slides</a>]
+</body>
+</html>
+

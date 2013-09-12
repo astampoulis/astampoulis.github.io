@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>Typed computation of logical terms inside a language with effects</title>
+</head>
+<body>
+<h1>Typed computation of logical terms inside a language with effects</h1>
+<h2>Antonis Stampoulis <br/>Zhong Shao</h2>
+
+<h3>Abstract</h3>
+<p>
+In this paper, we propose a novel language design that couples a
+type-safe effectful computational language with first-class support
+for logical terms like propositions and proofs. As our logical
+level we use a small subset of CIC, while our computational language is
+inspired by ML. The language design is such that the added features
+are orthogonal to the rest of the computational language, and also do
+not require changes to the logic language, so soundness is guaranteed.
+We argue that such a language design is well-tailored to write tactics
+for proof assistants like Coq and Isabelle, and show some initial
+examples.
+</p>
+
+<p>
+A key technical challenge in designing such a language is dealing
+successfully with open terms of the logical level. We present a novel
+solution to this problem, that maintains type safety while requiring
+relatively small programming overhead. We show how it is related to similar
+solutions developed for computation with LF terms.
+</p>
+
+[ <a href="paper.pdf">short version</a> | <a href="TR.pdf">extended version</a> ]
+</body>
+</html>
+
