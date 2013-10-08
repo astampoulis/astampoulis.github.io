@@ -171,6 +171,28 @@
 
     <div class="main">
       <p>
+	<span class="big-title">Research at MIT.</span>
+	During my post-doc at MIT, I am designing and implementing a meta-language --
+	a language where one can describe the syntax and semantics of programming languages,
+	as well as transformation rules between languages, through concise declarative rules.
+	Coupling such object-language rules with an interpreter for the meta-language yields
+	prototype implementations of tools such as type checkers and type inferencers for
+	the object language, parsing and pretty-printers, compiler phases etc. The primary aim
+	of the tool is to minimize the cost of experimentation with new programming language
+	features: for example, one can extend an existing language description with a new type system feature,
+	and immediately try out programs that leverage it. In the
+	future, we aim to use a bootstrapped version of the meta-language in order to produce optimized, concrete implementations 
+	of such tools. <br/>
+
+	The meta-language itself is largely based on <a href="http://www.lix.polytechnique.fr/~dale/lProlog/">λProlog</a>:
+	a typed, higher-order extension to Prolog that allows the use
+	of higher-order abstract syntax to represent the terms of
+	object languages. I am currently building a new interpreter
+	for this language tailored to the goals outlined above.
+      </p>
+
+
+      <p style="padding-top:1em;">
       <span class="big-title">VeriML.</span>
       My dissertation research at Yale focused on the design, metatheory,
       implementation and usage of a novel programming language and proof
@@ -191,7 +213,6 @@
       approach to formal proofs closer to informal practice.
       </p>
 
-    </p>
     <p class="research-section">
       Publications:
     </p>
