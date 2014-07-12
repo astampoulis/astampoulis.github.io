@@ -193,14 +193,53 @@
 	The design of Makam is largely based on <a href="http://www.lix.polytechnique.fr/~dale/lProlog/">λProlog</a>:
 	a typed, higher-order extension to Prolog that allows the use
 	of higher-order abstract syntax to represent the terms of
-	object languages. The base λProlog design is extended with various
-	practical features and also with constructs to allow meta-programs
-	that yield meta-programs. I am currently implementing the Makam
-	interpreter in OCaml as well as experimenting with implementing
-	traditional language features within language. Makam is still
-	under active development so stay tuned!
+	object languages. We have refined the base λProlog design to our purposes,
+	supporting a richer class of higher-order predicates, robust support for
+	dynamic typing unification, and staging and reflective features. These features
+	allow us to implement things like complicated binding structures, generic structural
+	recursion traversals, and various metalanguage extensions within Makam itself. We
+	have so far used Makam to model a number of type systems, both traditional &emdash; a core
+	ML language &emdash;, as well as coming from modern research languages, like VeriML (the language
+	I designed for my Ph.D.) and Ur/Web (the language Adam has been working on). We have also
+	modeled the CPS and closure conversion phases of the classic translation of System F to
+	Typed Assembly Language.
       </p>
-
+      <p>
+	We have been keeping Makam under wraps for a year or so now, but we believe that it is at a good
+	stage of development right now to release it publicly. So if you are a PL researcher, PL student, or just interested in programming
+	languages, we encourage you to download Makam, try out our examples and implement your own language ideas today!
+      </p>
+    <p class="research-section">
+      Related files:
+    </p>
+      <ul>
+	<li><a href="makam/makam-0.5.tar.gz"
+	       onClick="javascript:_gaq.push['_trackPageView', '/makam/code']">
+	    <span class="title">The Makam metalanguage, version 0.5</span></a>. This is the current Makam implementation.
+	    You will need <a href="http://opam.ocaml.org/doc/Quick_Install.html">OPAM</a> to install it.
+        </li>
+        <li><a href="http://bitbucket.org/astampoulis/makam"
+	       onClick="javascript:_gaq.push['_trackPageView', '/makam/bitbucket']">
+	    <span class="title">The official BitBucket repository for Makam</span></a>. Makam is free software, released under the GPLv3. This is the official
+	  BitBucket repository for it.
+	</li>
+	<li><a href="makam/techoverview.pdf"
+	       onClick="javascript:_gaq.push['_trackPageView', '/makam/techoverview']">
+	    <span class="title">Technical Overview</span></a>. A paper describing the main technical features of Makam, which is the closest thing that we have right
+	  now to a language tutorial (expect a proper tutorial soon though!)
+	  </a>
+        </li>
+        <li><a href="makam/slides-crsx.pdf"
+	       onClick="javascript:_gaq.push['_trackPageView', '/makam/slides_crsx']">
+	    <span class="title">Slides for the CRSX User Meeting</span></a>. These are the slides for a talk I gave in the 2nd CRSX User Meeting, in Two Sigma NYC, where I
+	  was kindly hosted by Kristoffer Rose. They describe the main features of Makam and are a good reference point if you need a quick overview of the language.
+	</li>
+	<li><a href="makam/slides-lightning.pdf"
+	       onClick="javascript:_gaq.push['_trackPageView', '/makam/slides_lightning']">
+	    <span class="title">Slides for the MIT PL/SE Offsite</span></a>. This is a lightning 3-minute talk for the MIT Programming Languages/Software Engineering Offsite
+	  event. 
+	</li>
+      </ul>
 
       <p style="padding-top:1em;">
       <span class="big-title">VeriML.</span>
