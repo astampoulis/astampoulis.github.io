@@ -166,8 +166,9 @@
     </div>
 
     <div class="main">
-      I am a post-doctoral researcher at the Programming Languages and Verification group in MIT CSAIL, working under the supervision of <a href="http://adam.chlipala.net">Adam Chlipala</a>. I have recently completed my PhD at the <a href="http://www.cs.yale.edu/">Department
-	of Computer Science</a> of <a href="http://www.yale.edu/">Yale University</a>, where my advisor was <a href="http://flint.cs.yale.edu/shao/">Zhong Shao</a>. My main research interests are in the areas of programming languages, software verification, type systems and mechanized logic. Before coming to the US, I was working with <a href="http://www.softlab.ntua.gr/~nickie/">Nikos Papaspyrou</a> at the <a href="http://www.ece.ntua.gr/">School of Electrical Engineering and Computer Engineering</a> of the <a href="http://www.ntua.gr/">National Technical University of Athens</a>, where I completed my undergraduate studies.<br/>
+      I am a programming language researcher and a software engineer, based in New York City. I am currently a post-doctoral researcher at the Programming Languages and Verification group in MIT CSAIL, working under the supervision of <a href="http://adam.chlipala.net">Adam Chlipala</a> on the Makam metalanguage. Starting in October I will be working as a software innovator at <a href="http://www.originate.com/">Originate NYC</a>. I did my Ph.D. at the <a href="http://www.cs.yale.edu/">Department
+	of Computer Science</a> of <a href="http://www.yale.edu/">Yale University</a>, where I designed and implemented the VeriML proof language, with my advisor, <a href="http://flint.cs.yale.edu/shao/">Zhong Shao</a>. Before coming to the US, I was working with <a href="http://www.softlab.ntua.gr/~nickie/">Nikos Papaspyrou</a> at the <a href="http://www.ntua.gr/">National Technical University of Athens</a>.<br />
+      I like to program in functional languages, yet I would like them to be better than they are -- thus my research interests lie in language design, software verification, type systems and mechanized logic. However, designing new languages is hard. That's why I have implemented Makam, a metalanguage that minimizes the cost of trying out new language ideas, allowing us to explore and refine these ideas quickly.
     </div>
 
     <a name="research"></a>
@@ -178,17 +179,22 @@
     <div class="main">
       <p>
 	<span class="big-title">Makam.</span>
-	During my post-doc at MIT, I am designing and implementing Makam, a meta-language 
-	where one can describe the syntax and semantics of programming languages
-	as well as transformation rules between languages through concise declarative rules.
-	Coupling such object-language rules with an interpreter for the meta-language yields
-	prototype implementations of tools such as type checkers and type inferencers for
-	the object language, parsing and pretty-printers, compiler phases etc. The primary aim
-	of the tool is to minimize the cost of experimentation with new programming language
-	features: for example, one can extend an existing language description with a new type system feature,
-	and immediately try out programs that leverage it. In the
-	future, we aim to use a bootstrapped version of Makam in order to produce optimized, concrete implementations 
-	of such tools.</p>
+	During my post-doc at MIT, I designed and implemented Makam, a metalanguage for
+	rapid programming language prototyping. The goal of Makam is to drastically reduce the
+	time needed to prototype new programming language designs, features and ideas. The main
+	focus of Makam is in languages with sophisticated type systems (e.g. dependent types), but
+	other use cases are also possible, such as translations between languages, transformations between
+	successive intermediate representations, etc.
+      </p>
+      <p>
+	Makam works through <em>declarative and executable specifications</em>, resembling to a large
+	extent the rules that one would write down on paper to describe a language &emdash; e.g. its typing judgement,
+	its operational semantics, and so on. The rules are both readable and concise. After writing a set
+	of rules, the user can proceed to issue queries to the Makam implementation; these will work as a prototype
+	type checker (with inference), interpreter, etc., according to the rules that have been implemented.
+	Further rules can always be added without changing the existing code.
+	In the future, we aim to reuse Makam itself to translate those rules into an optimized, concrete implementation
+	of the corresponding prototype tools.</p>
       <p>
 	The design of Makam is largely based on <a href="http://www.lix.polytechnique.fr/~dale/lProlog/">λProlog</a>:
 	a typed, higher-order extension to Prolog that allows the use
@@ -200,14 +206,16 @@
 	recursion traversals, and various metalanguage extensions within Makam itself. We
 	have so far used Makam to model a number of type systems, both traditional &emdash; a core
 	ML language &emdash;, as well as coming from modern research languages, like VeriML (the language
-	I designed for my Ph.D.) and Ur/Web (the language Adam has been working on). We have also
-	modeled the CPS and closure conversion phases of the classic translation of System F to
-	Typed Assembly Language.
+	I designed for my Ph.D.) and Ur/Web (the language Adam has been working on). The difference in implementation cost is tremendous:
+	implementing veriML within Makam was three days' work, whereas the equivalent version of the prototype implementation of VeriML in OCaml
+	that I did during my Ph.D. was closer to three months' work. We have also modeled the CPS and closure conversion phases of the classic translation of System F to
+	Typed Assembly Language, as an example of how to model compilation phases within Makam.
       </p>
       <p>
 	We have been keeping Makam under wraps for a year or so now, but we believe that it is at a good
 	stage of development right now to release it publicly. So if you are a PL researcher, PL student, or just interested in programming
-	languages, we encourage you to download Makam, try out our examples and implement your own language ideas today!
+	languages, we encourage you to download Makam, try out our examples and implement your own language ideas today! I am really excited
+	about Makam and its prospects both for research and actual practice, so please feel free to contact me to talk more about it.
       </p>
     <p class="research-section">
       Related files:
