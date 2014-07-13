@@ -349,14 +349,12 @@ onClick="javascript: _gaq.push(['_trackPageview', '/downloads/icfp2010tr']);"><s
 
     <p style="padding-top:1em;"><span class="big-title">Karooma.</span>
       During my time working with Prof. Nikos Papaspyrou
-      at the NTUA, I designed a surface language
-      called Karooma, that compiles to the typed intermediate language
+      at the NTUA, I designed a simple imperative language
+      called Karooma, which does automatic certification of the code based on user-provided pre- and post-conditions.
+      Starting from a simply-typed calculus, the Karooma compiler translates program into a dependently-typed intermediate language (the typed intermediate language
       described in
       <a href="http://flint.cs.yale.edu/flint/publications/tscb.html">A Type System for Certified Binaries</a> by Shao
-      et al. Karooma is a small first-order language that enables
-      users to annotate their functions with pre- and post-conditions. The
-      programmer only needs to write the simply-typed version of
-      functions, and a simple Prolog-style theorem prover handles the
+      et al.).  A simple Prolog-style theorem prover handles the
       generated proof obligations; ultimately, binaries that carry
       full proof objects of the associated properties are produced.
       </p>
