@@ -166,8 +166,15 @@
     </div>
 
     <div class="main">
-      I am a programming language researcher and a software engineer, based in New York City. I am currently a post-doctoral researcher at the Programming Languages and Verification group in MIT CSAIL, working under the supervision of <a href="http://adam.chlipala.net">Adam Chlipala</a> on the Makam metalanguage. Starting in October I will be working as a software innovator at <a href="http://www.originate.com/">Originate NYC</a>. I did my Ph.D. at the <a href="http://www.cs.yale.edu/">Department
-	of Computer Science</a> of <a href="http://www.yale.edu/">Yale University</a>, where I designed and implemented the VeriML proof language, with my advisor, <a href="http://flint.cs.yale.edu/shao/">Zhong Shao</a>. Before coming to the US, I was working with <a href="http://www.softlab.ntua.gr/~nickie/">Nikos Papaspyrou</a> at the <a href="http://www.ntua.gr/">National Technical University of Athens</a>.<br />
+      I am a programming language researcher and a software engineer, based in New York City. I am currently a
+      post-doctoral researcher at the Programming Languages and Verification group in MIT CSAIL, working under
+      the supervision of <a href="http://adam.chlipala.net">Adam Chlipala</a> on the Makam metalanguage. Starting
+      in October I will be working as a software innovator at <a href="http://www.originate.com/">Originate NYC</a>.
+      I did my Ph.D. at the <a href="http://www.cs.yale.edu/">Department of Computer Science</a> of
+      <a href="http://www.yale.edu/">Yale University</a>, where I designed and implemented the VeriML proof
+      language, under the supervision of my advisor, <a href="http://flint.cs.yale.edu/shao/">Zhong Shao</a>.
+      Before coming to the US, I was working with <a href="http://www.softlab.ntua.gr/~nickie/">Nikos Papaspyrou</a>
+      at the <a href="http://www.ntua.gr/">National Technical University of Athens</a>.<br />
       My research interests include language design, software verification, type systems and mechanized logic.
     </div>
 
@@ -187,35 +194,41 @@
 	successive intermediate representations, etc.
       </p>
       <p>
-	Makam works through <em>declarative and executable specifications</em>, resembling to a large
+	Makam works through <em>declarative and executable specifications</em>, written in the form
+	of <em>rules</em>. Rules in Makam are both readable and concise, and resemble to a large
 	extent the rules that one would write down on paper to describe a language — e.g. its typing judgement,
-	its operational semantics, and so on. The rules are both readable and concise. After writing a set
-	of rules, the user can proceed to issue queries to the Makam implementation; these will work as a prototype
-	type checker (with inference), interpreter, etc., according to the rules that have been implemented.
+	its operational semantics, and so on. After writing a set of rules, the user can proceed to issue queries
+	to the Makam implementation; these will work as a prototype
+	type checker (with inference), interpreter, etc., and follow the rules that have been implemented.
 	Further rules can always be added without changing the existing code.
-	In the future, we aim to reuse Makam itself to translate those rules into an optimized, concrete implementation
+	In the future, we aim to use Makam itself to translate those rules into an optimized, concrete implementation
 	of the corresponding prototype tools.</p>
       <p>
 	The design of Makam is largely based on <a href="http://www.lix.polytechnique.fr/~dale/lProlog/">λProlog</a>:
 	a typed, higher-order extension to Prolog that allows the use
-	of higher-order abstract syntax to represent the terms of
+	of higher-order abstract syntax to represent binding in the terms of the
 	object languages. We have refined the base λProlog design to our purposes,
-	supporting a richer class of higher-order predicates, robust support for
-	dynamic typing unification, and staging and reflective features. These features
+	supporting a richer class of higher-order predicates, ensuring robust support for
+	dynamic typing unification, and adding some lightweight staging and reflective features. These features
 	allow us to implement things like complicated binding structures, generic structural
-	recursion traversals, and various metalanguage extensions within Makam itself. We
+	recursion traversals, Hindley-Milner generalization, as well as metalanguage extensions within the
+	metalanguage itself (e.g. adding a form of rules for parsing and pretty printing generation). We
 	have so far used Makam to model a number of type systems, both traditional — a core
-	ML language —, as well as coming from modern research languages, like VeriML (the language
-	I designed for my Ph.D.) and Ur/Web (the language Adam has been working on). The difference in implementation cost is tremendous:
-	implementing veriML within Makam was three days' work, whereas the equivalent version of the prototype implementation of VeriML in OCaml
-	that I did during my Ph.D. was closer to three months' work. We have also modeled the CPS and closure conversion phases of the classic translation of System F to
+	ML language —, as well as modern, like VeriML (the language
+	I designed for my Ph.D.) and Ur/Web (the secure web services language Adam has been working on).
+	The difference in implementation cost is tremendous: implementing veriML within Makam was
+	three days' work, whereas the equivalent version of the prototype implementation of VeriML in OCaml
+	that I did during my Ph.D. was at least three months' work. We have also modeled the CPS and
+	closure conversion phases of the classic translation of System F to
 	Typed Assembly Language, as an example of how to model compilation phases within Makam.
       </p>
       <p>
 	We have been keeping Makam under wraps for a year or so now, but we believe that it is at a good
-	stage of development right now to release it publicly. So if you are a PL researcher, PL student, or just interested in programming
-	languages, we encourage you to download Makam, try out our examples and implement your own language ideas today! I am really excited
-	about Makam and its prospects both for research and actual practice, so please feel free to contact me to talk more about it.
+	stage of development right now to release it publicly -- even though it still has a few kinks which
+	we hope to address in the next few months. So if you are a PL researcher, PL student, or
+	just interested in programming languages, we encourage you to download Makam, try out our examples
+	and implement your own language ideas today! I am really excited about Makam and its prospects both
+	for research and actual programming practice, so please feel free to contact me to talk more about it.
       </p>
     <p class="research-section">
       Related files:
@@ -228,24 +241,27 @@
         </li>
         <li><a href="http://bitbucket.org/astampoulis/makam"
 	       onClick="javascript:_gaq.push['_trackPageView', '/makam/bitbucket']">
-	    <span class="title">The official BitBucket repository for Makam</span></a>. Makam is free software, released under the GPLv3. This is the official
-	  BitBucket repository for it.
+	    <span class="title">The official BitBucket repository for Makam</span></a>. Makam is free software, released
+	  under the GPLv3. This is the official BitBucket repository for it.
 	</li>
 	<li><a href="makam/techoverview.pdf"
 	       onClick="javascript:_gaq.push['_trackPageView', '/makam/techoverview']">
-	    <span class="title">Technical Overview</span></a>. A paper describing the main technical features of Makam, which is the closest thing that we have right
-	  now to a language tutorial (expect a proper tutorial soon though!)
+	    <span class="title">Technical Overview</span></a>. A paper describing the main technical features of Makam,
+	  which is the closest thing that we have right now to a language tutorial (expect a proper tutorial soon though!)
 	  </a>
         </li>
         <li><a href="makam/slides-crsx.pdf"
 	       onClick="javascript:_gaq.push['_trackPageView', '/makam/slides_crsx']">
-	    <span class="title">Slides for the CRSX User Meeting</span></a>. These are the slides for a talk I gave in the 2nd CRSX User Meeting, in Two Sigma NYC.
-	    They describe the main features of Makam and are a good reference point if you need a quick overview of the language.
+	    <span class="title">Slides for the CRSX User Meeting</span></a>. These are the slides for a talk I gave in the
+	  2nd CRSX User Meeting, in Two Sigma NYC. They describe the main features of Makam and are a good reference point
+	  if you need a quick overview of the language.
 	</li>
 	<li><a href="makam/slides-lightning.pdf"
 	       onClick="javascript:_gaq.push['_trackPageView', '/makam/slides_lightning']">
-	    <span class="title">Slides for the MIT PL/SE Offsite</span></a>. This is a lightning 3-minute talk (with my notes) for the MIT Programming
-	  Languages/Software Engineering Offsite event. This is the talk that I have most enjoyed giving, but will not give you too much information about Makam.
+	    <span class="title">Slides for the MIT PL/SE Offsite</span></a>. This is a lightning 3-minute talk
+	  (with my notes) for the MIT Programming Languages/Software Engineering Offsite event. This is the talk that I
+	  have most enjoyed giving, and might be interesting, even though it will not give you too much information about
+	  Makam :)
 	</li>
       </ul>
 
@@ -253,8 +269,10 @@
       <span class="big-title">VeriML.</span>
       My dissertation research at Yale focused on the design, metatheory,
       implementation and usage of a novel programming language and proof
-      assistant, called VeriML. The goal behind VeriML is to enable scalable development of logical proofs; the main idea
-      about how to achieve this goal is to have good support for writing proof-producing functions with precise, typed signatures.
+      assistant, called VeriML. The goal behind VeriML is to enable scalable
+      development of logical proofs; the main idea about how to achieve this
+      goal is to have good support for writing proof-producing functions with
+      precise, typed signatures.
       </p>
 
       <p>
