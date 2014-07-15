@@ -207,7 +207,7 @@
 	The design of Makam is largely based on <a href="http://www.lix.polytechnique.fr/~dale/lProlog/">λProlog</a>:
 	a typed, higher-order extension to Prolog that allows the use
 	of higher-order abstract syntax to represent binding in the terms of the
-	object languages. We have refined the base λProlog design to our purposes,
+	object languages. We have refined the base λProlog design for our purposes,
 	supporting a richer class of higher-order predicates, ensuring robust support for
 	dynamic typing unification, and adding some lightweight staging and reflective features. These features
 	allow us to implement things like complicated binding structures, generic structural
@@ -216,7 +216,7 @@
 	have so far used Makam to model a number of type systems, both traditional — a core
 	ML language —, as well as modern, like VeriML (the language
 	I designed for my Ph.D.) and Ur/Web (the secure web services language Adam has been working on).
-	The difference in implementation cost is tremendous: implementing veriML within Makam was
+	The difference in implementation cost is tremendous: implementing VeriML within Makam was
 	three days' work, whereas the equivalent version of the prototype implementation of VeriML in OCaml
 	that I did during my Ph.D. was at least three months' work. We have also modeled the CPS and
 	closure conversion phases of the classic translation of System F to
