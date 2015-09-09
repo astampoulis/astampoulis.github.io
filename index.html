@@ -1,485 +1,195 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Antonis Stampoulis</title>
-    <meta charset="utf-8">
-    <style>
-      
-      /* A font by Jos Buivenga (exljbris) -> www.exljbris.com */ 
-      @font-face { font-family: Fontin; src: url('Fontin-Regular.otf'); }
-      @font-face { font-family: Fontin; font-weight: bold; src: url('Fontin-Bold.otf'); }
+<html lang="en">
+<head>
 
-      body {
-        background: #ADCBE8;
-        font-family: Fontin, 'Palatino Linotype', 'Georgia', 'Times New Roman';
-        margin: 0px;
-        line-height: 120%;
-      }
-      
-      a, a:link, a:visited, a:hover {
-        color: #000000;
-        text-decoration: none;
-      }
-	
-      :hover > a,
-      li .title a,
-      li a .title { border-bottom: 1px dotted black; }
-      
-      a:hover {
-        background: #FAEEB5;
-      }
+  
+  <meta charset="utf-8">
+  <title>Antonis Stampoulis</title>
+  <meta name="description" content="Antonis Stampoulis">
+  <meta name="author" content="Antonis Stampoulis">
 
-      .header {
-        padding-top: 2em;
-        padding-left: 3em;
-        padding-right: 3em;
-        display: block;
-        letter-spacing: 0.1em;
-      }
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-      .photo {
-        float: right;
-        padding-right: 2em;
-        padding-left: 2em;
-      }
+  
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="http://astampoulis.github.io/css/fonts.css">
+  
+  
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+  
 
-      .info {
-        display: block;
-        height: 250px;
-        text-align: right;
-      }
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
 
-      h1 {
-        margin: 0px;
-        margin-bottom: 20px;
-      }
+  <link rel="stylesheet" href="http://astampoulis.github.io/css/custom.css">
 
-      .navigation, .section {
-        display: block;
-        width: 100%;
-        background: #D7371A;
-        border-top: 1px solid white;
-        border-bottom: 1px solid white;
-        text-align: center;
-        margin-top: 2em;
-        margin-bottom: 2em;
-        color: white;
-      }
+  
+  
+  <link rel="stylesheet" href="http://astampoulis.github.io/highlight/styles/default.css">
+  
+  <script src="http://astampoulis.github.io/highlight/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 
-      .navigation a,
-      .navigation a:link,
-      .navigation a:visited,
-      .navigation a:hover,
-      .navigation a:active {
-        display: inline-block;
-        text-align: center;
-        text-decoration: none;
-        padding-left: 1em;
-        padding-right: 1em;
-        color: white;
-        border-left: 1px solid #D7371A;
-        border-right: 1px solid #D7371A;
-        border-bottom: none;
-      }
+  <link href="http://astampoulis.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Antonis Stampoulis" />
+  <link href="http://astampoulis.github.io/index.xml" rel="feed" type="application/rss+xml" title="Antonis Stampoulis" />
 
-      .navigation a:hover {
-        background: #E72F0D;
-        border-left: 1px solid white;
-        border-right: 1px solid white;
-      }
+</head>
+<body>
 
-      .main {
-        padding-left: 3em;
-        padding-right: 3em;
-        text-align: justify;
-      }
 
-      .big-title {
-        font-weight: bold;
-        font-size: 180%;
-      }
+<div class="header pure-g">
+    <div class="pure-u-1-24 pure-u-md-5-24"></div>
+    <div class="pure-u-11-12 pure-u-md-5-8">
+        <div class="desktop pure-menu pure-menu-horizontal nav-menu">
+            
+            <a href="/" class="site-title pure-menu-heading">Antonis Stampoulis</a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item">
+                    <a href="http://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="http://astampoulis.github.io/" class="pure-menu-link">About</a>
+                </li>
+            </ul>
+        </div>
+        <div class="mobile pure-menu nav-menu">
+            <a href="/" class="pure-menu-heading" id="toggle-home">Antonis Stampoulis</a>
+            <a href="#" id="toggle-btn">&#9776;</a>
+            <ul class="pure-menu-list" id="toggle-content" style="display:none;">
+                
+                <li class="pure-menu-item">
+                    <a href="http://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="http://astampoulis.github.io/" class="pure-menu-link">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
 
-      .research-section {
-        font-weight: bold;
-        font-size: 110%;
-      }
 
-      .title {
-        font-weight: bold;
-      }
 
-      .paper-title {
-        padding-left: 3em;
-      }
 
-      ul { list-style: none; }
-      li { margin-bottom: 0.5em; }
 
-      a img, a:hover img, a:visited img, a:link img, a:active img
-      { border: 0px; }
 
-      .email { vertical-align: text-bottom; }
-      
-    </style>
-<script type="text/javascript">
+<div class="pure-g">
+    <div class="pure-u-1-24 pure-u-md-5-24"></div>
+	<div class="pure-u-11-12 pure-u-md-5-8">
+        <div class="post">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-1328981-1']);
-  _gaq.push(['_setDomainName', 'astampoulis.github.io']);
-  _gaq.push(['_trackPageview']);
+            <div class="post-title">
+                <p class="footnote">
+                    
+		    
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+                    
+                    
 
-</script>
-  </head>
+                    
 
-  <body>
+                    
+                </p>
+                <h1></h1>
+            </div>
 
-    <div class="page">
+            <div class="post-content">
+                
 
-    <div class="header">
-      <div class="photo">
-	<img src="photo.jpg">
-      </div>
-      <div class="info">
-	<h1>Antonis Stampoulis</h1>
-	<div class="address">
-	  e-mail: <a href="mailto:antonis DOT stampoulis AT gmail DOT com"><img alt="firstname dot lastname at gmail dot com" src="email.png" class="email" /></a><br>
-	  Programming Languages and Verification group<br>
-	  MIT Computer Science and Artificial Intelligence Laboratory<br>
-	  Office: 32-G888<br>
-	  32 Vassar Street<br>
-	  Cambridge, MA, USA 02138
+<p><span style="border-radius: 10px; padding: -10px; display: block; overflow: hidden; float: right; padding: 0px; margin-left: 20px;">
+<img src="/myphoto.jpg" alt="Photo" />
+
+</span></p>
+
+<h1 id="hello:d680e8a854a7cbad6d490c445cba2eba">Hello!</h1>
+
+<p>I am a software engineer and programming languages researcher living in New York City.  I work at
+<a href="http://www.originate.com/">Originate NYC</a>, and was previously at <a href="http://plv.csail.mit.edu/">MIT</a>
+and at <a href="http://cpsc.yale.edu/">Yale</a>. You can find some of the things that I&rsquo;ve worked on below, or
+read new posts to this site as <a href="/blog">a blog</a>. Feel free to <a href="mailto:antonis DOT 
+stampoulis AT gmail DOT com">drop me a line</a>!</p>
+
+<h2 id="research:d680e8a854a7cbad6d490c445cba2eba">Research</h2>
+
+<ul>
+<li><p><a href="/makam">Makam</a>, a meta-language meant for prototyping and experimenting with new programming language ideas,
+and as an educational tool for teaching programming language concepts like type systems, compilation, etc.
+I started building Makam during my post-doc at MIT and I continue to work on it during my
+<a href="http://www.originate.com/stories/20-percent-time-done-right">20% time at Originate</a>.</p></li>
+
+<li><p><a href="/veriml">VeriML</a> is the language I designed and built for my Ph.D. It is motivated by the need
+for building formal proofs in a scalable way, in the context of software verification.</p></li>
+
+<li><p>I&rsquo;ve also worked on designing and implementing an efficient field-sensitive pointer analysis for
+the <a href="http://research.microsoft.com/en-us/projects/slam/">Windows Static Driver Verifier</a> while at
+Microsoft Research.</p></li>
+</ul>
+
+<h2 id="others:d680e8a854a7cbad6d490c445cba2eba">Others</h2>
+
+<ul>
+<li><p>Some of my <a href="/oldprojects">old projects</a> from my days at the <a href="http://www.ece.ntua.gr/">NTUA</a>.</p></li>
+
+<li><p>For official purposes, my name is Antonios Michael Stampoulis; for all other purposes, I use
+the informal version of my first name, Antonis. In Greek, my name is written as <span
+style="font-family: 'Helvetica', 'Arial', sans;">Αντώνης Σταμπούλης</span>.</p></li>
+
+<li><p>Links to friends&rsquo; pages: <a href="http://www.eratoAkremmyda.com">Erato Kremmyda</a>,
+<a href="http://www.ling.uni-potsdam.de/~katsika/">Argyro Katsika</a>,
+<a href="http://nyuad.nyu.edu/en/academics/faculty/michail-maniatakos.html">Mihalis Maniatakos</a>,
+<a href="http://www.engr.uconn.edu/~bam11008/">Thanassis Bamis</a>.</p></li>
+</ul>
+
+            </div>
+        </div>
 	</div>
-      </div>
-    </div>
-
-    <div class="navigation">
-      <a href="#research">Research</a>
-      <a href="#teaching">Teaching</a>
-      <a href="#programming">Programming</a>
-      <a href="#personal">Other</a>
-    </div>
-
-    <div class="main">
-      I am a programming language researcher and a software engineer, based in New York City. I am currently a
-      post-doctoral researcher at the Programming Languages and Verification group in MIT CSAIL, working under
-      the supervision of <a href="http://adam.chlipala.net">Adam Chlipala</a> on the Makam metalanguage. Starting
-      in October I will be working as a software innovator at <a href="http://www.originate.com/">Originate NYC</a>.
-      I did my Ph.D. at the <a href="http://www.cs.yale.edu/">Department of Computer Science</a> of
-      <a href="http://www.yale.edu/">Yale University</a>, where I designed and implemented the VeriML proof
-      language, under the supervision of my advisor, <a href="http://flint.cs.yale.edu/shao/">Zhong Shao</a>.
-      Before coming to the US, I was working with <a href="http://www.softlab.ntua.gr/~nickie/">Nikos Papaspyrou</a>
-      at the <a href="http://www.ntua.gr/">National Technical University of Athens</a>.<br />
-      My research interests include language design, software verification, type systems and mechanized logic.
-    </div>
-
-    <a name="research"></a>
-    <div class="section">
-      Research
-    </div>
-
-    <div class="main">
-      <p>
-	<span class="big-title">Makam.</span>
-	During my post-doc at MIT, I designed and implemented Makam, a metalanguage for
-	rapid programming language prototyping. The goal of Makam is to drastically reduce the
-	time needed to prototype new programming language designs, features and ideas. The main
-	focus of Makam is in languages with sophisticated type systems (e.g. dependent types), but
-	other use cases are also possible, such as translations between languages, transformations between
-	successive intermediate representations, etc.
-      </p>
-      <p>
-	Makam works through <em>declarative and executable specifications</em>, written in the form
-	of <em>rules</em>. Rules in Makam are both readable and concise, and resemble to a large
-	extent the rules that one would write down on paper to describe a language — e.g. its typing judgement,
-	its operational semantics, and so on. After writing a set of rules, the user can proceed to issue queries
-	to the Makam implementation; these will work as a prototype
-	type checker (with inference), interpreter, etc., and follow the rules that have been implemented.
-	Further rules can always be added without changing the existing code.
-	In the future, we aim to use Makam itself to translate those rules into an optimized, concrete implementation
-	of the corresponding prototype tools.</p>
-      <p>
-	The design of Makam is largely based on <a href="http://www.lix.polytechnique.fr/~dale/lProlog/">λProlog</a>:
-	a typed, higher-order extension to Prolog that allows the use
-	of higher-order abstract syntax to represent binding in the terms of the
-	object languages. We have refined the base λProlog design for our purposes,
-	supporting a richer class of higher-order predicates, ensuring robust support for
-	dynamic typing unification, and adding some lightweight staging and reflective features. These features
-	allow us to implement things like complicated binding structures, generic structural
-	recursion traversals, Hindley-Milner generalization, as well as metalanguage extensions within the
-	metalanguage itself (e.g. adding a form of rules for parsing and pretty printing generation). We
-	have so far used Makam to model a number of type systems, both traditional — a core
-	ML language —, as well as modern, like VeriML (the language
-	I designed for my Ph.D.) and Ur/Web (the secure web services language Adam has been working on).
-	The difference in implementation cost is tremendous: implementing VeriML within Makam was
-	three days' work, whereas the equivalent version of the prototype implementation of VeriML in OCaml
-	that I did during my Ph.D. was at least three months' work. We have also modeled the CPS and
-	closure conversion phases of the classic translation of System F to
-	Typed Assembly Language, as an example of how to model compilation phases within Makam.
-      </p>
-      <p>
-	We have been keeping Makam under wraps for a year or so now, but we believe that it is at a good
-	stage of development right now to release it publicly -- even though it still has a few kinks which
-	we hope to address in the next few months. So if you are a PL researcher, PL student, or
-	just interested in programming languages, we encourage you to download Makam, try out our examples
-	and implement your own language ideas today! I am really excited about Makam and its prospects both
-	for research and actual programming practice, so please feel free to contact me to talk more about it.
-      </p>
-    <p class="research-section">
-      Related files:
-    </p>
-      <ul>
-	<li><a href="makam/makam-0.5.tar.gz"
-	       onClick="javascript:_gaq.push['_trackPageView', '/makam/code']">
-	    <span class="title">The Makam metalanguage, version 0.5</span></a>. This is the current Makam implementation.
-	    You will need <a href="http://opam.ocaml.org/doc/Quick_Install.html">OPAM</a> to install it.
-        </li>
-        <li><a href="http://bitbucket.org/astampoulis/makam"
-	       onClick="javascript:_gaq.push['_trackPageView', '/makam/bitbucket']">
-	    <span class="title">The official BitBucket repository for Makam</span></a>. Makam is free software, released
-	  under the GPLv3. This is the official BitBucket repository for it.
-	</li>
-	<li><a href="makam/techoverview.pdf"
-	       onClick="javascript:_gaq.push['_trackPageView', '/makam/techoverview']">
-	    <span class="title">Technical Overview</span></a>. A paper describing the main technical features of Makam,
-	  which is the closest thing that we have right now to a language tutorial (expect a proper tutorial soon though!)
-	  </a>
-        </li>
-        <li><a href="makam/slides-crsx.pdf"
-	       onClick="javascript:_gaq.push['_trackPageView', '/makam/slides_crsx']">
-	    <span class="title">Slides for the CRSX User Meeting</span></a>. These are the slides for a talk I gave in the
-	  2nd CRSX User Meeting, in Two Sigma NYC. They describe the main features of Makam and are a good reference point
-	  if you need a quick overview of the language.
-	</li>
-	<li><a href="makam/slides-lightning.pdf"
-	       onClick="javascript:_gaq.push['_trackPageView', '/makam/slides_lightning']">
-	    <span class="title">Slides for the MIT PL/SE Offsite</span></a>. This is a lightning 3-minute talk
-	  (with my notes) for the MIT Programming Languages/Software Engineering Offsite event. This is the talk that I
-	  have most enjoyed giving, and might be interesting, even though it will not give you too much information about
-	  Makam :)
-	</li>
-      </ul>
-
-      <p style="padding-top:1em;">
-      <span class="big-title">VeriML.</span>
-      My dissertation research at Yale focused on the design, metatheory,
-      implementation and usage of a novel programming language and proof
-      assistant, called VeriML. The goal behind VeriML is to enable scalable
-      development of logical proofs; the main idea about how to achieve this
-      goal is to have good support for writing proof-producing functions with
-      precise, typed signatures.
-      </p>
-
-      <p>
-      More precisely, VeriML aims to provide a compelling
-      alternative to tactic development compared to existing approaches,
-      by leveraging a rich type system coupled with a rich ML-style programming
-      model. I have also shown how generalizations of features of traditional
-      proof assistants, such as interactive development of proofs and
-      tactics, are a direct consequence of VeriML's design. Thus the language can
-      be viewed as a proof assistant in its entirety. Through the addition
-      of a simple staging construct, VeriML provides extensible static
-      checking of proofs and tactics, solving long-standing issues such
-      as having a safe yet user-extensible conversion rule. Because of
-      this support, users are free to extend the 'background reasoning'
-      that the proof assistant uses to handle trivial details with
-      domain-specific sophistication of arbitrary complexity; this simplifies
-      the development of further proofs and automation, yielding an 
-      approach to formal proofs closer to informal practice.
-      </p>
-
-    <p class="research-section">
-      Publications:
-    </p>
-      <ul>
-	<li>
-	  <a href="https://github.com/astampoulis/dissertation-public/raw/master/dissertation.pdf"
-	     onClick="javascript:_gaq.push(['_trackPageView',
-		      '/downloads/dissertation']);"><span class="title">VeriML:
-	      A dependently-typed, user-extensible and language-centric
-	      approach to proof assistants</span></a>, my Ph.D. dissertation,  submitted on November
-	  2nd 2012. This is the canonical reference to VeriML presenting its design, metatheory, implementation and examples in detail. <em>(This is an update with better formatting and minor corrections; you can find the official Yale version <a href="https://github.com/astampoulis/dissertation-public/raw/master/dissertation-final.pdf" onClick="javascript:_gaq.push(['_trackPageView', '/downloads/dissertation-official']);">here</a>.)</em>
-	</li>
-       <li><a href="popl2012/paper.pdf"
-onClick="javascript: _gaq.push(['_trackPageview', '/downloads/popl2012paper']);"><span class="title">Static and User-Extensible Proof Checking</span></a>, Antonis Stampoulis and Zhong Shao, <em>POPL 2012, January 25-27, 2012, Philadelphia, PA, USA</em>
-       </li>
-       <ul><li><a href="popl2012/TR.pdf"
-onClick="javascript: _gaq.push(['_trackPageview', '/downloads/popl2012tr']);"><span class="title">Extended Version</span></a>, with full typing rules and extensive metatheory proofs.</ul>
-       </li>
-	<li>
-	  <a href="icfp2010/paper.pdf"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/icfp2010paper']);"><span class="title">VeriML: Typed Computation of Logical
-	      Terms inside a Language with Effects</span></a>, Antonis Stampoulis
-	  and Zhong Shao, <em>ICFP 2010, September 27-29, 2010,
-	    Baltimore, MD, USA</em>
-        </li>
-       <ul><li><a href="icfp2010/TR.pdf"
-onClick="javascript: _gaq.push(['_trackPageview', '/downloads/icfp2010tr']);"><span class="title">Extended Version</span></a>, the accompanying
-      technical report of the above paper, that includes all typing
-      rules and metatheory proofs.</li></ul>
-    </ul>
-    <p class="research-section">Talks:</p>
-    <ul>
-      <li><a href="https://github.com/astampoulis/dissertation-public/raw/master/defense.pptx"
-	     onClick="javascript:_gaq.push(['_trackPageview',
-		      '/downloads/defenseslides']);"><span class="title">Ph.D. Defense</span></a>, October 15, 2012</li>
-      <li><a href="popl2012/slides.pdf"
-	     onClick="javascript:_gaq.push(['_trackPageview', '/downloads/popl2012slides']);"><span class="title">POPL 2012</span></a>, January 26, 2012, Philadelphia, PA, USA. [<a href="popl2012/slides.pptx" onClick="javascript: _gaq.push(['_trackPageview', '/downloads/popl2012slidespptx']);">pptx</a>, <a href="http://dl.acm.org/citation.cfm?id=2103690">ACM link with video</a>]</li>
-      <li><a href="slides/types2011.pdf"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/types2011slides']);"><span class="title">TYPES 2011</span></a>, September 9, 2011, Bergen, Norway. Using VeriML to have an alternative, safely user-extensible conversion rule.</li>
-      <li><a href="slides/icfp2010.pdf"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/icfp2010slides']);"><span class="title">ICFP 2010 (International Conference on Functional Programming)</span></a>, September 29, 2010, Baltimore, MD, USA [<a href="https://vimeo.com/16541746">video</a>]</li>
-      <li><a href="slides/dtp2010.pdf"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/dtp2010slides']);"><span class="title">DTP 2010 (Dependently Typed
-      Programming Workshop)</span></a>, July 9, 2010, Edinburgh, UK</li>
-    </ul>							 
-    <p class="research-section">Implementation:</p>
-      <ul>
-	<li><a href="popl2012/veriml-0.5.tar.gz"
-	       onClick="javascript: _gaq.push(['_trackPageview', '/downloads/veriml05']);"><span class="title">VeriML version 0.5</span></a>. A lot of big and small improvements and changes; the most major ones being that VeriML is now compiled through translation to ML (instead of interpreted) and that there is some inductive definition support.
-	</li>
-	<li><a href="popl2012/veriml-0.3.tar.gz"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/veriml03']);"><span class="title">VeriML
-      version 0.3</span></a>. This reflects VeriML as described in our
-      POPL 2012 paper.</li>
-      <li><a href="icfp2010/veriml-0.1.tar.gz"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/veriml01']);"><span class="title">VeriML version 0.1</span></a>. An older version corresponding to our ICFP 2010 paper.</li>
-      </ul>
-
-    <p style="padding-top:1em;"><span class="big-title">SLAM.</span> During the summer of 2007,
-    I interned with <a href="http://research.microsoft.com/en-us/people/ellab/">Ella Bounimova</a> and <a href="http://research.microsoft.com/en-us/people/tball/">Tom
-    Ball</a> at the <a href="http://research.microsoft.com/en-us/groups/srr/default.aspx">Software Reliability Group</a>
-    of <a href="http://research.microsoft.com/">Microsoft Research</a>, Redmond. I worked on the
-    <a href="http://research.microsoft.com/en-us/projects/slam/">SLAM project</a>, a static analysis tool that follows the CEGAR
-    methodology to verify whether Windows device drivers written in C
-    make valid system API calls according to some specification. I
-    designed and implemented a field-sensitive pointer analysis
-    algorithm in OCaml, that replaced the existing pointer analysis in
-    SLAM resulting both in greater precision and increased efficiency. The new
-    analysis allowed SLAM to scale to one-order-of-magnitude larger device drivers
-    and got shipped as part of the SDK of the next version of Windows.
-    </p>
-
-    <p style="padding-top:1em;"><span class="big-title">Karooma.</span>
-      During my time working with Prof. Nikos Papaspyrou
-      at the NTUA, I designed a simple imperative language
-      called Karooma, which does automatic certification of the code based on user-provided pre- and post-conditions.
-      Starting from a simply-typed calculus, the Karooma compiler translates program into a dependently-typed intermediate language (the typed intermediate language
-      described in
-      <a href="http://flint.cs.yale.edu/flint/publications/tscb.html">A Type System for Certified Binaries</a> by Shao
-      et al.).  A simple Prolog-style theorem prover handles the
-      generated proof obligations; ultimately, binaries that carry
-      full proof objects of the associated properties are produced.
-      </p>
-
-    <p class="research-section">Publications:</p>
-    <ul><li><a href="projects/diploma-thesis.pdf"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/diplomathesis']);"><span class="title">Design and
-    Implementation of a High-Level Language for
-    Programming with Proofs</span></a>, Diploma Thesis for the School
-    of Electrical and Computer Engineering, NTUA, July 2006.
-    Unfortunately only available in Greek!</li></ul>
-
-    </div>
-
-    <a name="teaching"></a>
-    <div class="section">
-      Teaching
-    </div>
-
-    <div class="main">
-      <p>
-      Classes in Yale where I have served as a teaching assistant:
-      </p>
-      <ul>
-      <li><a href="http://flint.cs.yale.edu/cs430/"><span class="title">CPSC430 - Formal Semantics</span></a>, Fall
-      2009. Instructor: <a href="http://flint.cs.yale.edu/shao/">Zhong Shao</a>.</li>
-      <li><a href="https://classesv2.yale.edu/portal/site/ling141_f08"><span class="title">LING141 - Language and Computation</span></a>, Fall
-      2008. Instructor: <a href="http://pantheon.yale.edu/~gjs42/">Gaja Jarosz</a>.</li>
-      <li><a href="http://zoo.cs.yale.edu/classes/cs433"><span class="title">CPSC433 - Computer Networks</span></a>, Spring
-      2007. Instructor: <a href="http://cs-www.cs.yale.edu/homes/yry/">Richard Yang</a>.</li>
-      <li><a href="http://zoo.cs.yale.edu/classes/cs112"><span class="title">CPSC112 - Introduction to Programming</span></a>, Fall
-      2007. Instructor: <a href="http://cs-www.cs.yale.edu/homes/yry/">Richard Yang</a>.</li>
-      </ul>
-    </div>
-
-    <a name="programming"></a>
-    <div class="section">
-      Programming
-    </div>
-    <div class="main">
-    Below you can find some things I've programmed throughout the years -- either
-    as personal projects or as class assignments.
-    <ul>  
-
-      <li><span class="title">enRay</span> (<a href="projects/enray-source.tar.gz"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/enraysource']);">source</a>, <a 
-								       href="projects/enray-linux.tar.gz"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/enraylinux']);">Linux</a>, <a 
-															href="projects/enray-windows.zip"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/enraywindows']);">Windows</a>), a 
-	realtime raytracing engine with hardware acceleration (programmed for first-generation fixed-pipeline accelerators). Example games with binaries for Windows and Linux: <a 
-											  href="projects/enray-invaders.zip"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/enrayinvaders']);">enRay invaders</a>, <a 
-																		    href="projects/enray-tetris.zip"
-	     onClick="javascript: _gaq.push(['_trackPageview', '/downloads/enraytetris']);">enRay Tetris</a>.</li> 
-
-      <li><span class="title"><a href="projects/compiler-tiger.tar.gz">Tiger Compiler</a></span>,
-  for Zhong Shao's Compilers class, implemented in SML/NJ. Uses an intermediate tree generator
-  module made by Eric Cheng.</li>
-
-      <li><span class="title"><a href="projects/music-hassound.tar.gz">Haskell CSound wrapper with
-	  GADTs and arrows</a></span>, for Paul Hudak's Haskell + Music
-	  course. Requires a working copy of Haskore.</li> 
-
-      <li><span class="title"><a href="projects/compiler-edsger.tar.bz2">Edsger Compiler</a></span>, for the
-	Compilers course at the NTUA, implemented in C++. Compiles a subset of C into
-	x86 assembly and CIL code for .NET.</li> 
-
-      <li><span class="title">Virtual Mechanics</span> (<a href="projects/vmech-win.zip">Windows</a>, <a 
-									      href="projects/vmech-lin.tar.gz">Linux i386</a>), a simulator for elementary
-	physics lab experiments. Developed with Alberto Angel, Melina Kourti,
-	Panagiotis Voulgaris and Christos Dimoulas, for the software engineering course at
-	the NTUA. Originally meant to be used only for 3D simulation of scripted experiments; later a
-	rudimentary user interface was added.</li> 
-
-      <li><span class="title"><a href="projects/connect-four.zip">Connect Four</a></span>, a network-enabled
-	implementation of the popular board game in Java. Includes a powerful AI
-	client. </li> 
-
-    </ul>
-    </div>
-      
-    <a name="personal"></a>
-    <div class="section">
-      Other
-    </div>
-    
-    <div class="main">
-      <p>
-    For official purposes, my name is Antonios Michael Stampoulis; for all other purposes, I prefer the informal version of my first name, Antonis. In Greek, my name is written as <span style="font-family: 'Times New Roman' !important;">Αντώνης Σταμπούλης</span>.<br />
-    I'm an avid music fan -- check out 
-    my <a href="http://last.fm/user/enplo">Last.fm</a>
-    page to see what I've been listening to lately! <br/>
-    Links to friends' pages: <a href="http://www.eratoAkremmyda.com">Erato Kremmyda</a>, <a href="http://www.mmaniatakos.com">Mihalis Maniatakos</a>, <a href="http://www.ling.uni-potsdam.de/~katsika/">Argyro Katsika</a>, <a href="http://www.engr.uconn.edu/~bam11008/">Athanasios Bamis</a>, <a href="http://yale.academia.edu/DominikBartmanski">Dominik Bartmanski</a>, <a href="http://www.ccs.neu.edu/home/chrdimo/">Christos Dimoulas</a>, <a href="http://www.zurich.ibm.com/~iko/">Ioannis Koltsidas</a>, <a href="http://cseweb.ucsd.edu/~pvoulgar/">Panagiotis Voulgaris</a>, <a href="http://queens.db.toronto.edu/~albert/">Albert Angel</a>
-    </p>
-      <p>
-	This webpage uses the Fontin font
-	from <a href="http://www.exljbris.com/">http://www.exljbris.com/</a>.
-      </p>
-    </div>
-
-    
-    
+    <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
 
 
-    </div>
 
-  </body>
 
+
+
+
+
+
+
+
+
+<div class="footer pure-g">
+    <div class="pure-u-1-24 pure-u-md-5-24"></div>
+    <div class="pure-u-11-12 pure-u-md-5-8">
+        <div class="pure-menu pure-menu-horizontal footer-content">
+
+            <a href="#" class="pure-menu-heading pull-right" id="gototop-btn">↑ TOP</a>
+        </div>
+	  </div>
+      <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+<script src="http://astampoulis.github.io/js/jquery.min.js" type="text/javascript"></script>
+<script src="http://astampoulis.github.io/js/jquery.timeago.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(function(){
+    $("time.timeago").timeago();
+  })
+  $("#toggle-btn").click(function(){
+    $("#toggle-content").toggle();
+    if($(this).html() === "☰") {
+        $(this).html("X")
+    } else {
+        $(this).html("☰")
+    }
+  });
+  $(window).resize(function(){
+    if(window.innerWidth > 768) {
+      $(".desktop").removeAttr("style");
+    }
+  });
+</script>
+
+</body>
 </html>
+

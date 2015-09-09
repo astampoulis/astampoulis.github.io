@@ -3,8 +3,8 @@
 
   
   <meta charset="utf-8">
-  <title>Makam</title>
-  <meta name="description" content="Makam">
+  <title>VeriML</title>
+  <meta name="description" content="VeriML">
   <meta name="author" content="Antonis Stampoulis">
 
   
@@ -86,46 +86,68 @@
 
                     
                 </p>
-                <h1>Makam</h1>
+                <h1>VeriML</h1>
             </div>
 
             <div class="post-content">
                 
 
-<p>Makam is a metalanguage: a language for implementing languages. It supports
-consise declarative definitions, aimed at allowing rapid prototyping and experimentation
-with new programming language research ideas. The design of Makam is based on higher-order logic
-programming and is a refinement of the λProlog language. Makam is implemented from scratch in OCaml.</p>
+<p>My dissertation research at Yale focused on the design, metatheory, implementation and usage of a
+novel programming language and proof assistant, called VeriML. The goal behind VeriML is to enable
+scalable development of logical proofs; the main idea about how to achieve this goal is to have good
+support for writing proof-producing functions with precise, typed signatures.</p>
 
-<p>The name comes from the makam/maqam of traditional Turkish and Arabic music: a set of
-techniques of improvisation, defining the pitches, patterns and development of a piece of music.</p>
+<p>More precisely, VeriML aims to provide a compelling alternative to tactic development compared to
+existing approaches, by leveraging a rich type system coupled with a rich ML-style programming
+model. I have also shown how generalizations of features of traditional proof assistants, such as
+interactive development of proofs and tactics, are a direct consequence of VeriML&rsquo;s design. Thus the
+language can be viewed as a proof assistant in its entirety. Through the addition of a simple
+staging construct, VeriML provides extensible static checking of proofs and tactics, solving
+long-standing issues such as having a safe yet user-extensible conversion rule. Because of this
+support, users are free to extend the &lsquo;background reasoning&rsquo; that the proof assistant uses to handle
+trivial details with domain-specific sophistication of arbitrary complexity; this simplifies the
+development of further proofs and automation, yielding an approach to formal proofs closer to
+informal practice.</p>
 
-<p>I started working on the design and implementation of Makam started in 2012 at MIT, under the
-supervision of <a href="http://adam.chlipala.net/">Prof. Adam Chlipala</a>, and continue to work on it as a
-personal project at <a href="http://www.originate.com/">Originate NYC</a>.</p>
-
-<h1 id="code-papers-and-slides:d680e8a854a7cbad6d490c445cba2eba">Code, papers and slides.</h1>
+<h2 id="publications:8a51a2fa25ffce60a76fb964739ad372">Publications</h2>
 
 <ul>
-<li><a href="http://github.com/astampoulis/makam">The GitHub repository for Makam</a>.
-Makam is free software, released under the GPLv3. This is the
-official GitHub repository for it.</li>
-<li><a href="techoverview.pdf">Technical Overview</a>. A paper describing the
-main technical features of Makam, which is the closest thing that
-we have right now to a language tutorial (expect a proper tutorial
-soon though!)</li>
-<li><a href="makam/slides-crsx.pdf">Slides for the CRSX User Meeting</a>. These are
-the slides for a talk I gave in the 2nd CRSX User Meeting, in Two
-Sigma NYC. They describe the main features of Makam and are a good
-reference point if you need a quick overview of the language.</li>
-<li><a href="makam/slides-lightning.pdf">Slides for the MIT PL/SE Offsite</a>. This
-is a lightning 3-minute talk (with my notes) for the MIT
-Programming Languages/Software Engineering Offsite event. This is
-the talk that I have most enjoyed giving, and might be
-interesting, even though it will not give you too much information
-about Makam :)</li>
-<li>A <a href="technical">technical description</a> of Makam, geared towards
-programming language researchers.</li>
+<li><p><a href="dissertation.pdf">VeriML: A dependently-typed, user-extensible and language-centric approach to proof assistants</a>.
+This is my Ph.D. dissertation, submitted on November 2nd 2012. This is the canonical reference to
+VeriML presenting its design, metatheory, implementation and examples in detail.</p></li>
+
+<li><p><a href="popl2012paper.pdf">Static and User-Extensible Proof Checking</a>, Antonis Stampoulis and Zhong Shao, <em>POPL 2012, January 25-27, 2012, Philadelphia, PA, USA</em>. There is also the <a href="popl2012tr.pdf">Extended Version</a>, with full typing rules and extensive metatheory proofs.</p></li>
+
+<li><p><a href="icfp2010paper.pdf">VeriML: Typed Computation of Logical Terms inside a Language with Effects</a>,
+Antonis Stampoulis and Zhong Shao, <em>ICFP 2010, September 27-29, 2010, Baltimore, MD, USA</em>, as well as the <a href="icfp2010tr.pdf">extended version</a>.</p></li>
+</ul>
+
+<h2 id="talks:8a51a2fa25ffce60a76fb964739ad372">Talks</h2>
+
+<ul>
+<li><a href="https://github.com/astampoulis/dissertation-public/raw/master/defense.pptx">Ph.D.  Defense</a>,
+October 15, 2012</li>
+<li><a href="popl2012slides.pdf">POPL 2012</a>, January 26, 2012, Philadelphia, PA,
+USA. <a href="popl2012slides.pptx">PowerPoint file</a>,
+<a href="http://dl.acm.org/citation.cfm?id=2103690">ACM link with video</a></li>
+<li><a href="types2011slides.pdf">TYPES 2011</a>, September 9, 2011, Bergen, Norway. Using VeriML to have an
+alternative, safely user-extensible conversion rule.</li>
+<li><a href="icfp2010slides.pdf">ICFP 2010</a>, September
+29, 2010, Baltimore, MD, USA. <a href="https://vimeo.com/16541746">Video of the talk</a>.</li>
+<li><a href="dtp2010slides.pdf">DTP 2010</a>, July 9, 2010, Edinburgh, UK</li>
+</ul>
+
+<h2 id="implementation:8a51a2fa25ffce60a76fb964739ad372">Implementation</h2>
+
+<ul>
+<li><a href="popl2012/veriml-0.5.tar.gz">VeriML version 0.5</a>. A lot of big and
+small improvements and changes; the most major ones being that
+VeriML is now compiled through translation to ML (instead of
+interpreted) and that there is some inductive definition support.</li>
+<li><a href="popl2012/veriml-0.3.tar.gz">VeriML version 0.3</a>. This reflects
+VeriML as described in our POPL 2012 paper.</li>
+<li><a href="icfp2010/veriml-0.1.tar.gz">VeriML version 0.1</a>. An older version
+corresponding to our ICFP 2010 paper.</li>
 </ul>
 
             </div>

@@ -3,8 +3,8 @@
 
   
   <meta charset="utf-8">
-  <title>Makam</title>
-  <meta name="description" content="Makam">
+  <title>The Makam metalanguage</title>
+  <meta name="description" content="The Makam metalanguage">
   <meta name="author" content="Antonis Stampoulis">
 
   
@@ -86,46 +86,53 @@
 
                     
                 </p>
-                <h1>Makam</h1>
+                <h1>The Makam metalanguage</h1>
             </div>
 
             <div class="post-content">
                 
 
-<p>Makam is a metalanguage: a language for implementing languages. It supports
-consise declarative definitions, aimed at allowing rapid prototyping and experimentation
-with new programming language research ideas. The design of Makam is based on higher-order logic
-programming and is a refinement of the λProlog language. Makam is implemented from scratch in OCaml.</p>
+<p>The main focus of Makam is in prototyping sophisticated type systems such as dependent types,
+contextual types, etc. Other use cases are also possible, such as translations between languages,
+transformations between successive intermediate representations, etc.</p>
 
-<p>The name comes from the makam/maqam of traditional Turkish and Arabic music: a set of
-techniques of improvisation, defining the pitches, patterns and development of a piece of music.</p>
+<p>Makam works through <em>declarative and executable specifications</em>, written in the form of
+<em>rules</em>. Rules in Makam are both readable and concise, and resemble to a large extent the rules that
+one would write down on paper to describe a language — e.g. its typing judgement, its operational
+semantics, and so on. After writing a set of rules, the user can proceed to issue queries to the
+Makam implementation; these will work as a prototype type checker (with inference), interpreter,
+etc., and follow the rules that have been implemented. Further rules can always be added without
+changing the existing code. In the future, we aim to use Makam itself to translate those rules into
+an optimized, concrete implementation of the corresponding prototype tools.</p>
 
-<p>I started working on the design and implementation of Makam started in 2012 at MIT, under the
-supervision of <a href="http://adam.chlipala.net/">Prof. Adam Chlipala</a>, and continue to work on it as a
-personal project at <a href="http://www.originate.com/">Originate NYC</a>.</p>
+<p>The design of Makam is largely based on <a href="http://www.lix.polytechnique.fr/~dale/lProlog/">λProlog</a>: a
+typed, higher-order extension to Prolog that allows the use of higher-order abstract syntax to
+represent binding in the terms of the object languages. We have refined the base λProlog design for
+our purposes, supporting a richer class of higher-order predicates, ensuring robust support for
+dynamic typing unification, and adding some lightweight staging and reflective features. These
+features allow us to implement things like complicated binding structures, generic structural
+recursion traversals, Hindley-Milner generalization, as well as metalanguage extensions within the
+metalanguage itself (e.g. adding a form of rules for parsing and pretty printing generation). We
+have so far used Makam to model a number of type systems, both traditional, like the core of an
+ML-like language, as well as modern, like VeriML (the language I designed for my Ph.D.) and Ur/Web
+(the secure web services language Adam has been working on).  The difference in implementation cost
+is tremendous: implementing VeriML within Makam was three days&rsquo; work, whereas the equivalent version
+of the prototype implementation of VeriML in OCaml that I did during my Ph.D.  was at least three
+months&rsquo; work. We have also modeled the CPS and closure conversion phases of the classic translation
+of System F to Typed Assembly Language, as an example of how to model compilation phases within
+Makam.</p>
 
-<h1 id="code-papers-and-slides:d680e8a854a7cbad6d490c445cba2eba">Code, papers and slides.</h1>
+<h1 id="draft-papers-and-talks:7f7059ba0c7e3c5a4178a13cd348abbe">Draft papers and talks</h1>
 
 <ul>
-<li><a href="http://github.com/astampoulis/makam">The GitHub repository for Makam</a>.
-Makam is free software, released under the GPLv3. This is the
-official GitHub repository for it.</li>
-<li><a href="techoverview.pdf">Technical Overview</a>. A paper describing the
-main technical features of Makam, which is the closest thing that
-we have right now to a language tutorial (expect a proper tutorial
-soon though!)</li>
-<li><a href="makam/slides-crsx.pdf">Slides for the CRSX User Meeting</a>. These are
-the slides for a talk I gave in the 2nd CRSX User Meeting, in Two
-Sigma NYC. They describe the main features of Makam and are a good
+<li><a href="techoverview.pdf">Technical Overview</a>. A paper describing the main technical features of Makam
+(slightly dated).</li>
+<li><a href="slides-crsx.pdf">Slides for the CRSX User Meeting</a>. These are the slides for a talk I gave in the
+2nd CRSX User Meeting, in Two Sigma NYC. They describe the main features of Makam and are a good
 reference point if you need a quick overview of the language.</li>
-<li><a href="makam/slides-lightning.pdf">Slides for the MIT PL/SE Offsite</a>. This
-is a lightning 3-minute talk (with my notes) for the MIT
-Programming Languages/Software Engineering Offsite event. This is
-the talk that I have most enjoyed giving, and might be
-interesting, even though it will not give you too much information
-about Makam :)</li>
-<li>A <a href="technical">technical description</a> of Makam, geared towards
-programming language researchers.</li>
+<li><a href="slides-lightning.pdf">Slides for the MIT PL/SE Offsite</a>. This is a lightning 3-minute talk (with
+my notes) for the MIT Programming Languages/Software Engineering Offsite event. Not a lot
+of info on Makam, but quite a fun talk to give :-)</li>
 </ul>
 
             </div>
