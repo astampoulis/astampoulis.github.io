@@ -56,11 +56,11 @@
 
   <script type="text/x-mathjax-config">
    MathJax.Hub.Queue(function() {
-       
-       
-       
+       // Fix <code> tags after MathJax finishes running. This is a
+       // hack to overcome a shortcoming of Markdown. Discussion at
+       // https://github.com/mojombo/jekyll/issues/199
        var all = MathJax.Hub.getAllJax(), i;
-       for(i = 0; i < all.length; i += 1) {
+       for(i = 0; i &lt; all.length; i += 1) {
            all[i].SourceElement().parentNode.className += ' has-jax';
        }
    });
@@ -146,7 +146,7 @@ trivial details with domain-specific sophistication of arbitrary complexity; thi
 development of further proofs and automation, yielding an approach to formal proofs closer to
 informal practice.</p>
 
-<h2 id="publications:8a51a2fa25ffce60a76fb964739ad372">Publications</h2>
+<h2 id="publications">Publications</h2>
 
 <ul>
 <li><p><a href="dissertation.pdf">VeriML: A dependently-typed, user-extensible and language-centric approach to proof assistants</a>.
@@ -159,7 +159,7 @@ VeriML presenting its design, metatheory, implementation and examples in detail.
 Antonis Stampoulis and Zhong Shao, <em>ICFP 2010, September 27-29, 2010, Baltimore, MD, USA</em>, as well as the <a href="icfp2010tr.pdf">extended version</a>.</p></li>
 </ul>
 
-<h2 id="talks:8a51a2fa25ffce60a76fb964739ad372">Talks</h2>
+<h2 id="talks">Talks</h2>
 
 <ul>
 <li><a href="https://github.com/astampoulis/dissertation-public/raw/master/defense.pptx">Ph.D.  Defense</a>,
@@ -174,16 +174,16 @@ alternative, safely user-extensible conversion rule.</li>
 <li><a href="dtp2010slides.pdf">DTP 2010</a>, July 9, 2010, Edinburgh, UK</li>
 </ul>
 
-<h2 id="implementation:8a51a2fa25ffce60a76fb964739ad372">Implementation</h2>
+<h2 id="implementation">Implementation</h2>
 
 <ul>
-<li><a href="popl2012/veriml-0.5.tar.gz">VeriML version 0.5</a>. A lot of big and
+<li><a href="veriml-0.5.tar.gz">VeriML version 0.5</a>. A lot of big and
 small improvements and changes; the most major ones being that
 VeriML is now compiled through translation to ML (instead of
 interpreted) and that there is some inductive definition support.</li>
-<li><a href="popl2012/veriml-0.3.tar.gz">VeriML version 0.3</a>. This reflects
+<li><a href="veriml-0.3.tar.gz">VeriML version 0.3</a>. This reflects
 VeriML as described in our POPL 2012 paper.</li>
-<li><a href="icfp2010/veriml-0.1.tar.gz">VeriML version 0.1</a>. An older version
+<li><a href="veriml-0.1.tar.gz">VeriML version 0.1</a>. An older version
 corresponding to our ICFP 2010 paper.</li>
 </ul>
 
