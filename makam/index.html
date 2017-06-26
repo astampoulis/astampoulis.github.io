@@ -80,9 +80,9 @@
             
             <a href="/" class="site-title pure-menu-heading">Antonis Stampoulis</a>
             <ul class="pure-menu-list">
-                <li class="pure-menu-item">
-                    <a href="http://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
-                </li>
+                
+                
+                
                 <li class="pure-menu-item">
                     <a href="http://astampoulis.github.io/" class="pure-menu-link">About</a>
                 </li>
@@ -93,9 +93,9 @@
             <a href="#" id="toggle-btn">&#9776;</a>
             <ul class="pure-menu-list" id="toggle-content" style="display:none;">
                 
-                <li class="pure-menu-item">
-                    <a href="http://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
-                </li>
+                
+                
+                
                 <li class="pure-menu-item">
                     <a href="http://astampoulis.github.io/" class="pure-menu-link">About</a>
                 </li>
@@ -106,44 +106,76 @@
 </div>
 
 
+
+
 <div class="pure-g" id="maincontainer">
     <div class="pure-u-1-24 pure-u-md-5-24"></div>
 	<div class="pure-u-11-12 pure-u-md-5-8">
-	  <ul class="posts">
-		
-                
-		<li>
-		  <h2><a href="http://astampoulis.github.io/blog/welcome/">Welcome!</a></h2>
+        <div class="post">
 
-		  <p class="footnote">
-			submitted <time datetime="2015-09-08T13:57:59-04:00" class="post-list timeago">2015-09-08T13:57:59-04:00</time>
-
-			
-
-			
-
-			
-
-			
-
-		  </p>
-		</li>
-
-                <div class="post-content">
-                  <div class="post">
-                  
-                    I&rsquo;m starting this blog as a way to post tutorial series on Makam, plus random thoughts. I&rsquo;m thinking of one series for programmers who want to learn more about programming language theory, type systems, formal semantics, etc.; and another one for programming language researchers who would like to use Makam to experiment with new type system ideas.
+            <div class="post-title">
+                <p class="footnote">
                     
-                  
-                  </div>
-                </div>
+		    
 
-		
-	  </ul>
+                    
+                    
+
+                    
+
+                    
+                </p>
+                <h1>Makam</h1>
+            </div>
+
+            <div class="post-content">
+                
+
+<p>Makam is a metalanguage: a language for implementing languages. It supports
+consise declarative definitions, aimed at allowing rapid prototyping and experimentation
+with new programming language research ideas. The design of Makam is based on higher-order logic
+programming and is a refinement of the λProlog language. Makam is implemented from scratch in OCaml.</p>
+
+<p>The name comes from the makam/maqam of traditional Turkish and Arabic music: a set of
+techniques of improvisation, defining the pitches, patterns and development of a piece of music.</p>
+
+<p>I started working on the design and implementation of Makam in 2012 at MIT, under the
+supervision of <a href="http://adam.chlipala.net/">Prof. Adam Chlipala</a>, and continue to work on it as a
+personal project at <a href="http://www.originate.com/">Originate NYC</a>.</p>
+
+<h1 id="code-papers-and-slides">Code, papers and slides.</h1>
+
+<ul>
+<li><a href="http://github.com/astampoulis/makam">The GitHub repository for Makam</a>.
+Makam is free software, released under the GPLv3. This is the
+official GitHub repository for it.</li>
+<li><a href="techoverview.pdf">Technical Overview</a>. A paper describing the
+main technical features of Makam, which is the closest thing that
+we have right now to a language tutorial (expect a proper tutorial
+soon though!)</li>
+<li><a href="slides-crsx.pdf">Slides for the CRSX User Meeting</a>. These are
+the slides for a talk I gave in the 2nd CRSX User Meeting, in Two
+Sigma NYC. They describe the main features of Makam and are a good
+reference point if you need a quick overview of the language.</li>
+<li><a href="slides-lightning.pdf">Slides for the MIT PL/SE Offsite</a>. This
+is a lightning 3-minute talk (with my notes) for the MIT
+Programming Languages/Software Engineering Offsite event. This is
+the talk that I have most enjoyed giving, and might be
+interesting, even though it will not give you too much information
+about Makam :)</li>
+<li>A <a href="technical">technical description</a> of Makam, geared towards
+programming language researchers.</li>
+</ul>
+
+            </div>
+        </div>
 	</div>
     <div class="pure-u-1-24 pure-u-md-1-6"></div>
-
 </div>
+
+
+
+
 
 
 <div class="footer pure-g">
