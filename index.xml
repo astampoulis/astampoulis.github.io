@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Blog posts from Antonis Stampoulis</title>
-    <link>http://astampoulis.github.io/</link>
+    <link>https://astampoulis.github.io/</link>
     <description>Recent posts on Antonis Stampoulis</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
@@ -14,10 +14,10 @@
     
     <item>
       <title>Welcome!</title>
-      <link>http://astampoulis.github.io/blog/welcome/</link>
+      <link>https://astampoulis.github.io/blog/welcome/</link>
       <pubDate>Tue, 08 Sep 2015 13:57:59 -0400</pubDate>
       <author>antonis DOT stampoulis AT gmail DOT com (Antonis Stampoulis)</author>
-      <guid>http://astampoulis.github.io/blog/welcome/</guid>
+      <guid>https://astampoulis.github.io/blog/welcome/</guid>
       <description>&lt;p&gt;I&amp;rsquo;m starting this blog as a way to post tutorial series on Makam, plus random thoughts.
 I&amp;rsquo;m thinking of one series for programmers who want to learn more
 about programming language theory, type systems, formal semantics, etc.; and another
