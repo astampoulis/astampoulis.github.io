@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+  
+  <meta charset="utf-8">
+  <title>Literate Makam web pages and other recent news</title>
+  <meta name="description" content="Literate Makam web pages and other recent news">
+  <meta name="author" content="Antonis Stampoulis">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://astampoulis.github.io/css/fonts.css">
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css" integrity="sha256-Q0zCrUs2IfXWYx0uMKJfG93CvF6oVII21waYsAV4/8Q=" crossorigin="anonymous" />
+  
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css" integrity="sha256-YqnnS/cQ7vE7gfVjdfx+JMi5EFD6m6Zqdemj81rs6PU=" crossorigin="anonymous" />
+
+  <link rel="stylesheet" href="https://astampoulis.github.io/css/custom.css">
+
+
+  <script src="https://unpkg.com/codemirror/lib/codemirror.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/codemirror/lib/codemirror.css" />
+  <script src="https://unpkg.com/codemirror/mode/javascript/javascript.js"></script>
+  <script src="https://unpkg.com/codemirror/mode/shell/shell.js"></script>
+  <script src="https://unpkg.com/codemirror/addon/mode/simple.js"></script>
+  <script src="https://unpkg.com/codemirror/addon/runmode/runmode.js"></script>
+  <script src="https://unpkg.com/makam-webui/makam-codemirror.js"></script>
+  <script src="https://unpkg.com/makam-webui/makam-webui.js"></script>
+  <script type="text/javascript">
+    makamWebUIOnLoad({ env: "prod", urlOfDependency: (filename) => new URL("../" + filename, document.baseURI).href });
+  </script>
+
+  
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+       tex2jax: {
+           inlineMath: [['$','$'], ['$-', '-$'], ['\\(','\\)']],
+           displayMath: [['$$','$$'], ['\[','\]']],
+           processEscapes: true,
+           processEnvironments: true,
+           skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+           TeX: { equationNumbers: { autoNumber: "AMS" },
+                  extensions: ["AMSmath.js", "AMSsymbols.js"] }
+       }
+   });
+  </script>
+
+  
+  
+  <link href="https://astampoulis.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Antonis Stampoulis" />
+  <link href="https://astampoulis.github.io/index.xml" rel="feed" type="application/rss+xml" title="Antonis Stampoulis" />
+
+</head>
+<body>
+
+
+<div class="header pure-g">
+    <div class="pure-u-1-24 pure-u-md-5-24"></div>
+    <div class="pure-u-11-12 pure-u-md-5-8">
+        <div class="desktop pure-menu pure-menu-horizontal nav-menu">
+            
+            <a href="/" class="site-title pure-menu-heading">Antonis Stampoulis</a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/" class="pure-menu-link">About</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="https://github.com/astampoulis" class="pure-menu-link">GitHub</a>
+                </li>
+            </ul>
+            <div style="clear: both;"></div>
+        </div>
+        <div class="mobile pure-menu nav-menu">
+            <a href="/" class="pure-menu-heading" id="toggle-home">Antonis Stampoulis</a>
+            <a href="#" id="toggle-btn">&#9776;</a>
+            <ul class="pure-menu-list" id="toggle-content" style="display:none;">
+                
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/" class="pure-menu-link">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+<div class="pure-g" id="maincontainer">
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+	<div class="pure-u-11-12 pure-u-md-1-2">
+        <div class="post">
+
+            <div class="post-title">
+                <p class="footnote">
+                    
+                    <time class="">2018-02-04</time>
+                    
+		    
+
+                    
+                    
+
+                    
+
+                    
+                </p>
+                <h1>Literate Makam web pages and other recent news</h1>
+            </div>
+
+            <div class="post-content">
+                <p>I have been working a lot on Makam in the past few months, the
+metalanguage based on λProlog that I started implementing at MIT
+working with <a href="http://adam.chlipala.net">Adam Chlipala</a>.  The latest
+feature I have been working on is a Web interface for Makam, meant to
+be used for literate posts that have Makam code alongside the
+text. The code is ran through a AWS Lambda Makam webservice. This is
+the first such literate post &ndash; so go ahead and evaluate the code of
+this web page, or even try editing the final queries before
+evaluating, using the two buttons on the bottom-right of the page!</p>
+
+<!-- more -->
+
+<p>It goes without saying what the first query utilizing this interface
+should be:</p>
+
+<pre><code class="language-makam-hidden">post: testsuite. %testsuite post.
+</code></pre>
+
+<pre><code class="language-makam">print_string &quot;Hello world!\n&quot; ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes.
+</code></pre>
+
+<p>The &ldquo;Yes.&rdquo; part you might notice in the result of this query means
+that a solution was found. Typically, Makam queries will have
+uninstantiated metavariables (that start with a capital letter), and
+the point of executing them would be to find valid solutions for those
+variables. More on these below.</p>
+
+<pre><code class="language-makam">string.concat [&quot;Hello&quot;, &quot; &quot;, X, &quot;!&quot;] &quot;Hello world!&quot; ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes:
+&gt;&gt; X := &quot;world&quot;.
+</code></pre>
+
+<p>Now that this interface is ready, I am planning to start a number of
+tutorials on Makam and on language implementation. I also have a few
+experimental ideas that I want to implement, where I would appreciate
+some feedback, but that is a matter for a later time.  In any
+case, <a href="mailto:antonis DOT stampoulis AT gmail DOT com">drop me a line</a> with your
+thoughts if you are reading this!</p>
+
+<p>Makam is meant to be used as a PL prototyping tool to explore research
+ideas, and also as tool for encoding and understanding existing
+languages and advanced type systems. It aims to be more of a very
+expressive core language that can be used to define languages and
+transformations between languages in a concise way, even when those
+are quite involved.  In that sense, it does not aim to be a language
+workbench that allows you to define specific aspects of your language
+using different domain specific languages (e.g. parsing, name
+resolution, typing, etc.), and gives you a full-blown IDE experience
+as a result (for example, in the style
+of <a href="http://www.metaborg.org/en/latest/">Spoofax</a>). However, a lot of
+the DSLs and tools that would comprise a language workbench in that
+style can be implemented within Makam itself.</p>
+
+<p>One such DSL that I have defined lately is a bidirectional syntax
+language. It can be used to define a parser and a pretty-printer for
+the language you are implementing, through a single set of rules
+(hence the &lsquo;bidirectionality&rsquo; in the name refers to viewing parsers
+and pretty-printers as inverses of each other). The pretty-printing
+part is quite basic at this point, but the parsing part is at a
+relatively good state: it is based on PEG parser combinators, and it
+generates parsing code in JavaScript that runs in Node.js under the
+hood. This is done because Makam is interpreted and quite slow to
+evaluate, so running the parsers in Node is a huge performance
+boost. Of course, the parser generation, which transforms terms of the
+PEG combinator language to JavaScript code, is implemented in Makam.</p>
+
+<p>Other things that I have been working on recently is a concrete
+binding library, to convert between abstract syntax with concrete
+names and abstract binding syntax utilizing HOAS; a testing framework;
+and various additions to the standard library.  There&rsquo;s now an <code>npm</code>
+package for Makam too with precompiled binaries for Linux and MacOS X,
+if you want to execute Makam locally and do not already have OCaml
+installed. With these, I felt like a version bump was in order, so
+this also marks the release of Makam 0.7.0.</p>
+
+<p>As a small example of the syntax DSL, let&rsquo;s implement a simple calculator
+language and its syntax description. I will not go into full details, so
+stay tuned for a more in-depth introductory post along the same
+lines. First, we will define the terms of our language&ndash; let&rsquo;s say we
+have integer constants, integer addition, <code>let</code> expressions and variables.</p>
+
+<pre><code class="language-makam">term : type.
+
+intconst : int -&gt; term.
+add : term -&gt; term -&gt; term.
+let : string -&gt; term -&gt; term -&gt; term.
+var : string -&gt; term.
+</code></pre>
+
+<p>Now let&rsquo;s define the syntax for these. We split the syntax into
+two precedence levels, and then give a syntax rule for each
+term constructor. The angle brackets means that the result of
+a parsing expression gets applied to the given term constructor &ndash;
+so each rule needs to apply the right kind of arguments in sequence.
+Quoted strings stand for tokens.</p>
+
+<pre><code class="language-makam">term, baseterm : syntax term.
+
+`( syntax_rules {{
+
+term -&gt;
+  add { &lt;baseterm&gt; &quot;+&quot; &lt;term&gt; }
+/ let { &quot;let&quot; &lt;makam.ident&gt; &quot;=&quot; &lt;term&gt; &quot;in&quot; &lt;term&gt; }
+/ baseterm
+;
+
+baseterm -&gt;
+  intconst { &lt;makam.int_literal&gt; }
+/ var { &lt;makam.ident&gt; }
+/ { &quot;(&quot; &lt;term&gt; &quot;)&quot; }
+
+}}).
+
+`( syntax.def_toplevel_js term ).
+</code></pre>
+
+<p>The two statements starting with the `<code>(</code> symbol are staged,
+meaning that they are Makam programs that compute Makam
+programs which are then evaluated in place. The former one
+translates the surface-level syntax for syntax rules to
+actual Makam rules; and the latter one generates a top-level
+parser in JavaScript for the <code>term</code>. The double-bracket
+notation stands for multi-line strings, which is useful
+when writing code of a different language.</p>
+
+<p>With these, we can issue parsing queries. For example:</p>
+
+<pre><code class="language-makam">syntax.parse_opt term {{ let a = 21 in a + a }} X ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes:
+&gt;&gt; X := let &quot;a&quot; (intconst 21) (add (var &quot;a&quot;) (var &quot;a&quot;)).
+</code></pre>
+
+<p>Let&rsquo;s also define an evaluator for this language that returns the
+result of an expression. This will be a predicate that relates a term
+of the language to its integer value:</p>
+
+<pre><code class="language-makam">eval : term -&gt; int -&gt; prop.
+
+eval (intconst N) N.
+eval (add E1 E2) N :-
+  eval E1 N1, eval E2 N2,
+  plus N1 N2 N.
+eval (let VAR DEF BODY) N :-
+  eval DEF N_DEF,
+  (eval (var VAR) N_DEF -&gt; eval BODY N).
+</code></pre>
+
+<p>We can also define a version of the <code>eval</code> predicate that accepts a
+string as input, and parses the string before evaluating. Makam has
+type-based overloading for constants, so types are used to
+disambiguate between the two <code>eval</code> predicates:</p>
+
+<pre><code class="language-makam">eval : string -&gt; int -&gt; prop.
+eval String Result :-
+  syntax.parse_opt term String Term,
+  eval Term Result.
+</code></pre>
+
+<p>Our simple calculator is ready! Here&rsquo;s an example query:</p>
+
+<pre><code class="language-makam-hidden">&gt;&gt; eval {{ let a = 21 in a + a }} X ?
+&gt;&gt; Yes:
+&gt;&gt; X := 42.
+</code></pre>
+
+<pre><code class="language-makam-input">eval {{ let a = 21 in a + a }} X ?
+</code></pre>
+
+<p>Using the Makam web interface, you can edit the query above &ndash; the
+Edit button on the bottom-right takes you directly to it &ndash; and re-run
+Makam to see the result with the Play button. (For the time being,
+only the query is editable, mostly to limit the AWS Lambda execution
+times; in the future, the rest of the Makam code blocks in a post
+might be editable as well if that proves useful.)</p>
+
+<p>That&rsquo;s it for the time being! More introductory tutorial posts should
+be coming up soon!</p>
+
+            </div>
+        </div>
+	</div>
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+</div>
+
+
+<div class="footer pure-g">
+    <div class="pure-u-1-24 pure-u-md-5-24"></div>
+    <div class="pure-u-11-12 pure-u-md-5-8">
+        <div class="pure-menu pure-menu-horizontal footer-content">
+
+            <a href="#" class="pure-menu-heading pull-right" id="gototop-btn">↑ TOP</a>
+        </div>
+	  </div>
+      <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+<script src="https://astampoulis.github.io/js/jquery.min.js" type="text/javascript"></script>
+<script src="https://astampoulis.github.io/js/jquery.timeago.js" type="text/javascript"></script>
+
+
+
+
+<script type="text/javascript">
+  $(function(){
+    $("time.timeago").timeago();
+  })
+  $("#toggle-btn").click(function(){
+    $("#toggle-content").toggle();
+    if($(this).html() === "☰") {
+        $(this).html("X")
+    } else {
+        $(this).html("☰")
+    }
+  });
+  $(window).resize(function(){
+    if(window.innerWidth > 768) {
+      $(".desktop").removeAttr("style");
+    }
+  });
+</script>
+
+</body>
+</html>
+
