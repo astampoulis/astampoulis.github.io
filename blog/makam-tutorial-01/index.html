@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+  
+  <meta charset="utf-8">
+  <title>Makam Tutorial 1: Prototyping a toy language and its interpreter</title>
+  <meta name="description" content="Makam Tutorial 1: Prototyping a toy language and its interpreter">
+  <meta name="author" content="Antonis Stampoulis">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://astampoulis.github.io/css/fonts.css">
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css" integrity="sha256-Q0zCrUs2IfXWYx0uMKJfG93CvF6oVII21waYsAV4/8Q=" crossorigin="anonymous" />
+  
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css" integrity="sha256-YqnnS/cQ7vE7gfVjdfx+JMi5EFD6m6Zqdemj81rs6PU=" crossorigin="anonymous" />
+
+  <link rel="stylesheet" href="https://astampoulis.github.io/css/custom.css">
+
+
+  <script src="https://unpkg.com/codemirror/lib/codemirror.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/codemirror/lib/codemirror.css" />
+  <script src="https://unpkg.com/codemirror/mode/javascript/javascript.js"></script>
+  <script src="https://unpkg.com/codemirror/mode/shell/shell.js"></script>
+  <script src="https://unpkg.com/codemirror/addon/mode/simple.js"></script>
+  <script src="https://unpkg.com/codemirror/addon/runmode/runmode.js"></script>
+  <script src="https://unpkg.com/makam-webui/makam-codemirror.js"></script>
+  <script src="https://unpkg.com/makam-webui/makam-webui.js"></script>
+  <script type="text/javascript">
+    makamWebUIOnLoad({ env: "prod", urlOfDependency: (filename) => new URL("../" + filename, document.baseURI).href });
+  </script>
+
+  
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+       tex2jax: {
+           inlineMath: [['$','$'], ['$-', '-$'], ['\\(','\\)']],
+           displayMath: [['$$','$$']],
+           processEscapes: true,
+           processEnvironments: true,
+           skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+           TeX: { equationNumbers: { autoNumber: "AMS" },
+                  extensions: ["AMSmath.js", "AMSsymbols.js"] }
+       }
+   });
+  </script>
+
+  
+  
+  <link href="https://astampoulis.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Antonis Stampoulis" />
+  <link href="https://astampoulis.github.io/index.xml" rel="feed" type="application/rss+xml" title="Antonis Stampoulis" />
+
+</head>
+<body>
+<div class="container">
+
+
+<div class="header pure-g">
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+    <div class="pure-u-11-12 pure-u-md-1-2">
+        <div class="desktop pure-menu pure-menu-horizontal nav-menu">
+            
+            <a href="/" class="site-title pure-menu-heading">Antonis Stampoulis</a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/" class="pure-menu-link">About</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="https://github.com/astampoulis" class="pure-menu-link">GitHub</a>
+                </li>
+            </ul>
+            <div style="clear: both;"></div>
+        </div>
+        <div class="mobile pure-menu nav-menu">
+            <a href="/" class="pure-menu-heading" id="toggle-home">Antonis Stampoulis</a>
+            <a href="#" id="toggle-btn">&#9776;</a>
+            <ul class="pure-menu-list" id="toggle-content" style="display:none;">
+                
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/" class="pure-menu-link">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+</div>
+
+
+<div class="pure-g" id="maincontainer">
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+	<div class="pure-u-11-12 pure-u-md-1-2">
+        <div class="post">
+
+            <div class="post-title">
+                <p class="footnote">
+                    
+                    <time class="">2018-03-19</time>
+                    
+		    
+
+                    
+                    
+
+                    
+
+                    
+                </p>
+                <h1>Makam Tutorial 1: Prototyping a toy language and its interpreter</h1>
+            </div>
+
+            <div class="post-content">
+                
+
+<p><em>In this post, we&rsquo;ll implement a toy interpreter for a small functional language.</em></p>
+
+<p>Some time ago I was designing and implementing a language: there was a class of programs that were
+hard to write and I wanted better ways to express them.</p>
+
+<p>There were a lot of decisions to make. For starters, <em>what should the constructs of the language
+be</em>?  How do these constructs enable writing the example programs that I had in mind? Which
+constructs should be the &ldquo;core&rdquo; ones of the language, and which ones should be defined in terms of
+them?</p>
+
+<!-- more -->
+
+<p>What does it mean to use the language? How do you write programs in it &ndash; what&rsquo;s the syntax like,
+what information can one get about their programs (and how much of it can be inferred)?  What do the
+constructs of the language mean &ndash; how do you compute with them, how do they relate to the
+constructs in existing languages?</p>
+
+<p>Coming up with answers to these questions is an iterative process: I would start with some answers,
+try to write example programs, see what works and what does not, and adapt accordingly. This process
+benefitted immensely from implementing the language: actually using the language revealed patterns
+that were important but that I wouldn&rsquo;t have found otherwise &ndash; so that informed how to refine the
+language further and what constructs to add.</p>
+
+<p>Still, implementing a language takes a long time, which hinders this experimentation and refinement
+process. There is a long &ldquo;feedback&rdquo; loop involved between having a new language design idea and
+having a working (even toy-ish) implementation of it.</p>
+
+<p>This is why I started working on the design and implementation of <strong>Makam</strong>, which is a
+<strong>metalanguage</strong>: a language to help with designing and implementing (prototypes of) new
+languages. It is a dialect of <a href="http://www.lix.polytechnique.fr/~dale/lProlog/">λProlog</a>. I worked on
+Makam with <a href="http://adam.chlipala.net">Adam Chlipala</a> while I was a post-doc at MIT. Since then,
+development has been on an on-and-off basis as a personal project while
+at <a href="http://www.originate.com">Originate</a>, but over the past six months or so I&rsquo;ve been working quite
+a bit on it.</p>
+
+<p>In this series of posts, we will use Makam to prototype various parts of a toy programming
+language. We will also talk through the current set of answers of the λProlog/Makam language design,
+in terms of what the base constructs are, and what can be programmed using those.</p>
+
+<p>A caveat before we start is that many things are work-in-progress. Though the base language and
+implementation is pretty well established at this point, Makam is still in a state of evolution and
+refinement, where I am exploring what further tools that are needed for doing language prototyping
+effectively and implementing those for Makam, using Makam itself.</p>
+
+<p>So, welcome to the world of Makam. There are various levels of meta at play, some things are a bit
+of a mess, but there are some nice things going on.</p>
+
+<h1 id="expressing-the-main-constructs-of-our-language-abstract-syntax">Expressing the main constructs of our language: Abstract syntax</h1>
+
+<p>Let&rsquo;s start defining and implementing our toy language. First of all, we will need to decide what
+our base constructs are. To keep things simple let&rsquo;s start with this:</p>
+
+<ul>
+<li>String constants like <code>&quot;foo&quot;</code>, <code>&quot;bar&quot;</code></li>
+<li>Integer constants like <code>5</code>, <code>42</code></li>
+<li>Boolean constants, namely <code>true</code> and <code>false</code></li>
+<li>An expression to add two integers or two strings together</li>
+<li>Array literal expressions, like <code>[40 + 2, &quot;foo&quot;]</code></li>
+<li>Record literal expressions, like <code>{ foo: &quot;bar&quot; }</code></li>
+</ul>
+
+<p>Here is a more formal way where you might see this kind of definition of language constructs on paper:</p>
+
+<p><code>$$\begin{array}{llll}
+e &amp; \text{(expressions)} &amp; ::= &amp; s \; | \; n \; | \; b \; | \; e_1 + e_2 \; | \; [ e_1, \cdots, e_n ] \; | \; \{ s_1: e_1, \cdots, s_n: e_n \} \\
+s &amp; \text{(string constants)} &amp; ::= &amp; \cdots \\
+n &amp; \text{(integer constants)} &amp; ::= &amp; \cdots \\
+b &amp; \text{(boolean constants)} &amp; ::= &amp; \text{true} \; | \; \text{false}
+\end{array}$$</code></p>
+
+<p>In this notation, <em>expressions</em>, <em>string constants</em>, <em>integer constants</em> etc. are different <strong>sorts</strong> &ndash;
+the different &ldquo;kinds of things&rdquo; that might be involved in the terms of our language.  For example,
+if we were encoding an imperative language that included statements and statement blocks, we would
+have separate sorts for them, like:</p>
+
+<p><code>$$\begin{array}{llll}
+st &amp; \text{(statements)} &amp; ::= &amp; x = e; \; | \; \text{return} \; e; \; | \;
+    \; | \; \text{if} \; (e) \; \text{then} \; b_1 \; \text{else} \; b_2; \; | \; \\
+&amp; &amp; &amp; 
+    \text{for} \; (\text{const} \; x \; \text{in} \; e) \; b; \; | \;
+    \; | \; \text{for} \; (\text{const} \; x \; \text{of} \; e) \; b; \; | \; \cdots \\
+b &amp; \text{(blocks)} &amp; ::= &amp; \{ \; st_1 \; \cdots \; st_n \; \}
+\end{array}$$</code></p>
+
+<p>Each alternative given for a sort is a <strong>constructor</strong>. When we read a constructor definition like
+&ldquo;$e_1 + e_2$&rdquo; it means that it&rsquo;s a constructor for expressions that is formed by two expressions. Similarly,
+&ldquo;$\text{if} \; (e) \; \text{then} \; b_1 \; \text{else} \; b_2;$&rdquo; is formed by an expression
+and two blocks. A constructor of the form &ldquo;$[ e_1, \cdots, e_n ]$&rdquo; means that it is formed through
+a list of expressions. So the letters we give to sorts (like $e$, $s$) are a handy pun that
+allows us to specify the constituent parts of each constructor concisely.</p>
+
+<p>Now this notation mixes a couple of things together: we are defining <em>what the constructors are</em>
+together with <em>what is the real syntax that we will use to write down those constructors</em>.
+However, we can separate those two aspects of the definition out. In terms of what the
+language <em>is</em>, the important part is <em>what the constructors are</em>. The syntax that we use
+for them is secondary: it is important in terms of actually writing down terms of the language
+in a way that is human-readable, but we could have different syntaxes for the same exact language.</p>
+
+<p>Instead, we can separate those two concerns into two parts: one where we just give an explicit name
+to each constructor and describe what its constituents are (how many are there and of what sorts) &ndash;
+on paper, we could denote that with something like &ldquo;$\text{add}(e_1, e_2)$&ldquo;; and one where we
+describe what the real syntactic form for the constructor is when we write out a program in the
+language. When we talk about <strong>abstract syntax</strong>, we refer to the first part; and <strong>concrete
+syntax</strong> is the latter one.</p>
+
+<p>Let&rsquo;s now see how we would encode these in Makam.</p>
+
+<p>First of all, we define the <em>sorts</em> that we need, which are referred to as <em>types</em> in Makam.
+For our simple language, we just need expressions:</p>
+
+<pre><code class="language-makam">expr : type.
+</code></pre>
+
+<p>There are built-in sorts for strings and integers in Makam, and booleans and lists are already
+defined in its standard library. Like in most functional languages, all elements of a list are
+of the same type, so lists of expressions are a different type than, say, lists of strings.</p>
+
+<p>We can now define the constructors for expressions as follows:</p>
+
+<pre><code class="language-makam">stringconst : (S: string) -&gt; expr.
+intconst : (I: int) -&gt; expr.
+boolconst : (B: bool) -&gt; expr.
+add : (E1: expr) (E2: expr) -&gt; expr.
+array : (ES: list expr) -&gt; expr.
+</code></pre>
+
+<p>So we first give the name of the constructor, like <code>add</code>, the arguments it takes (that is, its
+constituent parts), like <code>(E1: expr) (E2: expr)</code>, and the resulting sort that it belongs to, like
+<code>expr</code>, following the arrow.  The names of the arguments, like <code>E1</code> and <code>E2</code>, are only given as
+documentation. This helps sometimes to disambiguate between what each different argument is &ndash; for
+example, we could define the <code>if</code>-<code>then</code>-<code>else</code> statement as:</p>
+
+<pre><code class="language-makam-noeval">ifthenelse : (Condition: expr) (Then: block) (Else: block) -&gt; statement
+</code></pre>
+
+<p>Going back to booleans and lists, they are defined as follows:</p>
+
+<pre><code class="language-makam-noeval">bool : type.
+true : bool.
+false : bool.
+
+list : (A: type) -&gt; type.
+nil : list A.
+cons : (Head: A) (Tail: list A) -&gt; list A.
+</code></pre>
+
+<p>Lists are type constructors: that is, for each type <code>A</code>, <code>list A</code> is a type. Also, this shows what
+the notation is like when a constructor needs no arguments, like <code>true</code> and <code>false</code>.</p>
+
+<p>We have left the constructor for records out. We can view records as a list of fields, where each
+field pairs together a key with a value:</p>
+
+<pre><code class="language-makam">field : type.
+record : (Fields: list field) -&gt; expr.
+mkfield : (Key: string) (Val: expr) -&gt; field.
+</code></pre>
+
+<p>And that&rsquo;s all the constructors there are for the time being. Let&rsquo;s now define operations on them.</p>
+
+<h5 id="wip-from-here-on">WIP from here on</h5>
+
+<h1 id="interpretation">Interpretation</h1>
+
+<pre><code class="language-makam">eval : (E: expr) (V: expr) -&gt; prop.
+
+eval (stringconst S) (stringconst S).
+eval (intconst I) (intconst I).
+eval (boolconst B) (boolconst B).
+eval (add E1 E2) (intconst N) :-
+  eval E1 (intconst N1),
+  eval E2 (intconst N2),
+  plus N1 N2 N.
+eval (add E1 E2) (stringconst S) :-
+  eval E1 (stringconst S1),
+  eval E2 (stringconst S2),
+  string.append S1 S2 S.
+eval (array ES) (array VS) :-
+  map eval ES VS.
+</code></pre>
+
+<pre><code class="language-makam">update_or_add :
+  (In: list field) (Key: string) (Value: expr) (Out: list field) -&gt; prop.
+update_or_add [] Key Value [mkfield Key Value].
+update_or_add (mkfield Key Value1 :: Rest) Key Value2 (mkfield Key Value2 :: Rest).
+update_or_add (mkfield Key1 Value1 :: Rest) Key2 Value2 (mkfield Key1 Value1 :: Rest') :-
+  not(eq Key1 Key2), update_or_add Rest Key2 Value2 Rest'.
+
+eval_fields : (Evaled: list field) (Unevaled: list field) (Result: list field) -&gt; prop.
+eval_fields Evaled [] Evaled.
+eval_fields Evaled (mkfield Key Expr :: Rest) Result :-
+  eval Expr Value,
+  update_or_add Evaled Key Value Evaled',
+  eval_fields Evaled' Rest Result.
+
+eval (record ES) (record VS) :-
+  eval_fields [] ES VS.
+</code></pre>
+
+<h1 id="defining-the-concrete-syntax-for-our-language">Defining the concrete syntax for our language</h1>
+
+<pre><code class="language-makam-hidden">%open syntax.
+</code></pre>
+
+<pre><code class="language-makam">baseexpr, expr : syntax expr.
+field : syntax field.
+
+`(syntax_rules {{
+
+  baseexpr -&gt;
+    stringconst { &lt;makam.string_literal&gt; }
+  / intconst    { &lt;makam.int_literal&gt; }
+  / array       { &quot;[&quot; &lt;list_sep (token &quot;,&quot;) expr&gt; &quot;]&quot; }
+  / record      { &quot;{&quot; &lt;list_sep (token &quot;,&quot;) field&gt; &quot;}&quot; }
+
+  field -&gt;
+    mkfield  { &lt;makam.string_literal&gt; &quot;:&quot; &lt;expr&gt; }
+  / mkfield  { &lt;makam.ident&gt; &quot;:&quot; &lt;expr&gt; }
+
+  expr -&gt;
+    add      { &lt;baseexpr&gt; &quot;+&quot; &lt;expr&gt; }
+  / baseexpr
+
+}}).
+</code></pre>
+
+<pre><code class="language-makam">`( syntax.def_toplevel_js expr ).
+</code></pre>
+
+<pre><code class="language-makam">eval : string -&gt; string -&gt; prop.
+eval Input Output :-
+  syntax.parse_opt expr Input E,
+  print E,
+  debug(eval E V),
+  syntax.pretty expr V Output.
+</code></pre>
+
+<pre><code class="language-makam-input">syntax.parse_opt expr &lt;&lt; { &quot;foo&quot;: [ &quot;bar&quot;, 42 ] } &gt;&gt; X ?
+
+eval &lt;&lt; { &quot;foo&quot;: &quot;a&quot;, &quot;foo&quot;: [ &quot;bar&quot;, 40 + 2 ] } &gt;&gt; Y ?
+</code></pre>
+
+            </div>
+        </div>
+	</div>
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+</div>
+
+
+<div class="footer pure-g">
+    <div class="pure-u-1-24 pure-u-md-5-24"></div>
+    <div class="pure-u-11-12 pure-u-md-5-8">
+        <div class="pure-menu pure-menu-horizontal footer-content">
+
+            <a href="#" class="pure-menu-heading pull-right" id="gototop-btn">↑ TOP</a>
+        </div>
+	  </div>
+      <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+<script src="https://astampoulis.github.io/js/jquery.min.js" type="text/javascript"></script>
+<script src="https://astampoulis.github.io/js/jquery.timeago.js" type="text/javascript"></script>
+
+
+
+
+<script type="text/javascript">
+  $(function(){
+    $("time.timeago").timeago();
+  })
+  $("#toggle-btn").click(function(){
+    $("#toggle-content").toggle();
+    if($(this).html() === "☰") {
+        $(this).html("X")
+    } else {
+        $(this).html("☰")
+    }
+  });
+  $(window).resize(function(){
+    if(window.innerWidth > 768) {
+      $(".desktop").removeAttr("style");
+    }
+  });
+</script>
+
+</div>
+</body>
+</html>
+
