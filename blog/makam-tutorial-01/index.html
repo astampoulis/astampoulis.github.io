@@ -188,7 +188,8 @@ our base constructs are. To keep things simple let&rsquo;s start with this:</p>
 <p>Here is a more formal way where you might see this kind of definition of language constructs on paper:</p>
 
 <p><code>$$\begin{array}{llll}
-e &amp; \text{(expressions)} &amp; ::= &amp; s \; | \; n \; | \; b \; | \; e_1 + e_2 \; | \; [ e_1, \cdots, e_n ] \; | \; \{ s_1: e_1, \cdots, s_n: e_n \} \\
+e &amp; \text{(expressions)} &amp; ::= &amp; s \; | \; n \; | \; b \; | \; e_1 + e_2 \; | \; [ e_1, \cdots, e_n ] \; | \; \\
+                         &amp; &amp; &amp;   \{ s_1: e_1, \cdots, s_n: e_n \} \\
 s &amp; \text{(string constants)} &amp; ::= &amp; \cdots \\
 n &amp; \text{(integer constants)} &amp; ::= &amp; \cdots \\
 b &amp; \text{(boolean constants)} &amp; ::= &amp; \text{true} \; | \; \text{false}
@@ -256,7 +257,8 @@ constituent parts), like <code>(E1: expr) (E2: expr)</code>, and the resulting s
 documentation. This helps sometimes to disambiguate between what each different argument is &ndash; for
 example, we could define the <code>if</code>-<code>then</code>-<code>else</code> statement as:</p>
 
-<pre><code class="language-makam-noeval">ifthenelse : (Condition: expr) (Then: block) (Else: block) -&gt; statement
+<pre><code class="language-makam-noeval">ifthenelse :
+  (Condition: expr) (Then: block) (Else: block) -&gt; statement
 </code></pre>
 
 <p>Going back to booleans and lists, they are defined as follows:</p>
@@ -305,13 +307,21 @@ eval (array ES) (array VS) :-
 </code></pre>
 
 <pre><code class="language-makam">update_or_add :
-  (In: list field) (Key: string) (Value: expr) (Out: list field) -&gt; prop.
-update_or_add [] Key Value [mkfield Key Value].
-update_or_add (mkfield Key Value1 :: Rest) Key Value2 (mkfield Key Value2 :: Rest).
-update_or_add (mkfield Key1 Value1 :: Rest) Key2 Value2 (mkfield Key1 Value1 :: Rest') :-
-  not(eq Key1 Key2), update_or_add Rest Key2 Value2 Rest'.
+  (In: list field) (Key: string) (Value: expr)
+  (Out: list field) -&gt; prop.
+update_or_add []
+  Key Value [mkfield Key Value].
+update_or_add (mkfield Key Value1 :: Rest)
+  Key Value2
+  (mkfield Key Value2 :: Rest).
+update_or_add (mkfield Key1 Value1 :: Rest)
+  Key2 Value2
+  (mkfield Key1 Value1 :: Rest') :-
+    not(eq Key1 Key2), update_or_add Rest Key2 Value2 Rest'.
 
-eval_fields : (Evaled: list field) (Unevaled: list field) (Result: list field) -&gt; prop.
+eval_fields :
+  (Evaled: list field) (Unevaled: list field)
+  (Result: list field) -&gt; prop.
 eval_fields Evaled [] Evaled.
 eval_fields Evaled (mkfield Key Expr :: Rest) Result :-
   eval Expr Value,
