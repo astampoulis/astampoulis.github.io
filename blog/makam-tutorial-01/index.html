@@ -339,8 +339,8 @@ field : syntax field.
   / record      { &quot;{&quot; &lt;list_sep (token &quot;,&quot;) field&gt; &quot;}&quot; }
 
   field -&gt;
-    mkfield  { &lt;makam.string_literal&gt; &quot;:&quot; &lt;expr&gt; }
-  / mkfield  { &lt;makam.ident&gt; &quot;:&quot; &lt;expr&gt; }
+    mkfield  { &lt;makam.ident&gt; &quot;:&quot; &lt;expr&gt; }
+  / mkfield  { &lt;makam.string_literal&gt; &quot;:&quot; &lt;expr&gt; }
 
   expr -&gt;
     add      { &lt;baseexpr&gt; &quot;+&quot; &lt;expr&gt; }
@@ -355,14 +355,25 @@ field : syntax field.
 <pre><code class="language-makam">eval : string -&gt; string -&gt; prop.
 eval Input Output :-
   syntax.parse_opt expr Input E,
-  print E,
-  debug(eval E V),
+  eval E V,
   syntax.pretty expr V Output.
 </code></pre>
 
 <pre><code class="language-makam-input">syntax.parse_opt expr &lt;&lt; { &quot;foo&quot;: [ &quot;bar&quot;, 42 ] } &gt;&gt; X ?
 
 eval &lt;&lt; { &quot;foo&quot;: &quot;a&quot;, &quot;foo&quot;: [ &quot;bar&quot;, 40 + 2 ] } &gt;&gt; Y ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">tests : testsuite. %testsuite tests.
+
+&gt;&gt; syntax.parse_opt expr &lt;&lt; { &quot;foo&quot;: [ &quot;bar&quot;, 42 ] } &gt;&gt; X ?
+&gt;&gt; Yes:
+&gt;&gt; X := record [mkfield &quot;foo&quot; (array [stringconst &quot;bar&quot;, intconst 42])].
+
+
+&gt;&gt; eval &lt;&lt; { &quot;foo&quot;: &quot;a&quot;, &quot;foo&quot;: [ &quot;bar&quot;, 40 + 2 ] } &gt;&gt; Y ?
+&gt;&gt; Yes:
+&gt;&gt; Y := &quot;{ foo : [ \&quot;bar\&quot; , 42 ] } &quot;.
 </code></pre>
 
             </div>
