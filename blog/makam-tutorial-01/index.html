@@ -136,6 +136,9 @@ them?</p>
 
 <!-- more -->
 
+<pre><code class="language-makam-hidden">tests : testsuite. %testsuite tests.
+</code></pre>
+
 <p>What does it mean to use the language? How do you write programs in it &ndash; what&rsquo;s the syntax like,
 what information can one get about their programs (and how much of it can be inferred)?  What do the
 constructs of the language mean &ndash; how do you compute with them, how do they relate to the
@@ -238,9 +241,10 @@ For our simple language, we just need expressions:</p>
 <pre><code class="language-makam">expr : type.
 </code></pre>
 
-<p>There are built-in sorts for strings and integers in Makam, and booleans and lists are already
-defined in its standard library. Like in most functional languages, all elements of a list are
-of the same type, so lists of expressions are a different type than, say, lists of strings.</p>
+<p>There are built-in sorts for strings and integers in Makam; booleans
+and lists are already defined in its standard library. Like in most
+functional languages, all elements of a list are of the same type, so
+lists of expressions are a different type than, say, lists of strings.</p>
 
 <p>We can now define the constructors for expressions as follows:</p>
 
@@ -258,7 +262,7 @@ documentation. This helps sometimes to disambiguate between what each different 
 example, we could define the <code>if</code>-<code>then</code>-<code>else</code> statement as:</p>
 
 <pre><code class="language-makam-noeval">ifthenelse :
-  (Condition: expr) (Then: block) (Else: block) -&gt; statement
+  (Condition: expr) (Then: block) (Else: block) -&gt; statement.
 </code></pre>
 
 <p>Going back to booleans and lists, they are defined as follows:</p>
@@ -266,6 +270,8 @@ example, we could define the <code>if</code>-<code>then</code>-<code>else</code>
 <pre><code class="language-makam-noeval">bool : type.
 true : bool.
 false : bool.
+
+tuple : (X1: T1) (X2: T2) -&gt; T1 * T2.
 
 list : (A: type) -&gt; type.
 nil : list A.
@@ -283,11 +289,91 @@ record : (Fields: list field) -&gt; expr.
 mkfield : (Key: string) (Val: expr) -&gt; field.
 </code></pre>
 
-<p>And that&rsquo;s all the constructors there are for the time being. Let&rsquo;s now define operations on them.</p>
+<p>And that covers all the constructors we&rsquo;ll define for the time being. Now let&rsquo;s see how to actually
+define <em>computations</em> over these terms. Our example will be an interpreter for our language,
+that computes the value that an expression evaluates to.</p>
 
-<h5 id="wip-from-here-on">WIP from here on</h5>
+<h1 id="computation-in-logic-programming">Computation in logic programming</h1>
 
-<h1 id="interpretation">Interpretation</h1>
+<p>One of the main operations in a functional language is pattern-matching: that is, we try to match a
+value against a pattern; if the match is successful, we proceed to take the corresponding branch.
+Patterns are kind of like &ldquo;templates&rdquo; for values: some parts are explicitly specified, while others
+are allowed to be arbitrary. Pattern matching checks whether a value matches that template and what
+the instantiation for the unknown parts (the <em>pattern variables</em>) needs to be.</p>
+
+<p>Here&rsquo;s an example of a Makam query that does pattern matching. We will talk about queries later on,
+but if you run this post right now using the Run button on the bottom-right corner, you will see
+that an instantiation for the <code>N1</code>, <code>X2</code> pattern variables is found:</p>
+
+<pre><code class="language-makam">pattern_match (add (intconst N1) X2) (add (intconst 5) (intconst 10)) ?
+</code></pre>
+
+<p>Logic programming instead treats <em>unification</em> as one of the key operations. This is the symmetric,
+more general, version of pattern matching: instead of having a &ldquo;pattern&rdquo; with potentially unknown parts,
+and a &ldquo;value&rdquo; that is fully known, we have two patterns that might both have unknown parts in them.
+Matching them against each other might force instantiations on either one of them, or even for different
+parts of both:</p>
+
+<pre><code class="language-makam-hidden">unify : A -&gt; A -&gt; prop.
+unify X X.
+</code></pre>
+
+<pre><code class="language-makam">unify (add (intconst N1) X2) (add X1 (intconst N2)) ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes:
+&gt;&gt; X1 := intconst N1,
+&gt;&gt; X2 := intconst N2,
+&gt;&gt; N1 := N1,
+&gt;&gt; N2 := N2.
+</code></pre>
+
+<p>(Note the color-coding on the side of codeblocks of this post: blue blocks are things that will be sent
+to Makam, which become green after a successful run, and grey ones are skipped).</p>
+
+<p>This choice has a wide-ranging implication on how computation in logic programming actually looks
+like.  In a functional language, at the point where a function is applied, its inputs are fully
+known (or at least fully knowable, in a call-by-need language), whereas outputs are fully unknown,
+to be determined through evaluation of the function. In a logic programming language, there is no
+need to explicitly separate inputs from outputs: both of them could only be partially known at the
+point where a &ldquo;function&rdquo; is applied, and unification will reconcile the known and unknown parts.  So
+instead of functions we talk about <em>predicates</em>: these describe relations between terms, without
+explicitly designating some of them as inputs and some as outputs. What is an input and what is an
+output depends on the arguments that the predicates are called with. Here is an example of the
+<code>plus</code> predicate, which is the moral equivalent of the <code>a + b</code> operation on integers:</p>
+
+<pre><code class="language-makam">plus 1 2 X ?
+plus X 2 3 ?
+plus 1 X 3 ?
+</code></pre>
+
+<p>So the <code>plus A B C</code> predicate takes three arguments; the first two, <code>A</code>, <code>B</code>, are the operands, and <code>C</code>, the last one, is the
+result of the addition. However, the predicate can be used not only to find the result of <code>A + B</code>, but also to discover the
+value of <code>A</code> or <code>B</code> given the other operand and the result.</p>
+
+<p>The type of the <code>plus</code> predicate is:</p>
+
+<pre><code class="language-makam-noeval">plus : (Op1: int) (Op2: int) (Result: int) -&gt; prop.
+</code></pre>
+
+<p>The name of the type <code>prop</code> comes from <em>proposition</em>: these are the statements that we can query
+upon, and might be viewed as the logic programming equivalent of the <em>expressions</em> of a functional
+programming language. So a fully applied predicate like <code>plus</code> is a proposition, and by querying
+about it as we did above, we are asking the Makam interpreter to find an instantiation for the
+unknown <em>unification variables</em> that makes the proposition hold.</p>
+
+<p>One might ask &ndash; why is this generalization to relations instead of functions useful? One example
+where we can make good use of this in Makam is when implementing a type checking procedure for a
+language, where blurring the line between inputs and outputs allows us to get a type inferencing
+procedure essentially for free. But that is getting too much ahead of ourselves; we will see more
+on later posts.</p>
+
+<p>With this out of the way, it is time to try our hand at writing our first predicate over the
+expressions we defined.</p>
+
+<h1 id="writing-an-interpreter-for-our-language">Writing an interpreter for our language</h1>
+
+<p><strong>WIP from here on.</strong></p>
 
 <pre><code class="language-makam">eval : (E: expr) (V: expr) -&gt; prop.
 
@@ -374,9 +460,7 @@ eval Input Output :-
 eval &lt;&lt; { &quot;foo&quot;: &quot;a&quot;, &quot;foo&quot;: [ &quot;bar&quot;, 40 + 2 ] } &gt;&gt; Y ?
 </code></pre>
 
-<pre><code class="language-makam-hidden">tests : testsuite. %testsuite tests.
-
-&gt;&gt; syntax.parse_opt expr &lt;&lt; { &quot;foo&quot;: [ &quot;bar&quot;, 42 ] } &gt;&gt; X ?
+<pre><code class="language-makam-hidden">&gt;&gt; syntax.parse_opt expr &lt;&lt; { &quot;foo&quot;: [ &quot;bar&quot;, 42 ] } &gt;&gt; X ?
 &gt;&gt; Yes:
 &gt;&gt; X := record [mkfield &quot;foo&quot; (array [stringconst &quot;bar&quot;, intconst 42])].
 
