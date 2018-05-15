@@ -122,11 +122,11 @@
             </div>
 
             <div class="post-content">
-                
-
-<p><em>In this post, we&rsquo;ll implement a toy interpreter for a small functional language. We will use Makam,
+                <p><em>In this post, we&rsquo;ll implement a toy interpreter for a small functional language. We will use Makam,
 which is a language that helps in the &lsquo;initial spiking phase&rsquo; of designing a new language, allowing
 for a tight feedback loop and for iterating quickly.</em></p>
+
+<p></p>
 
 <p>Some time ago I was designing and implementing a language: there was a class of programs that were
 hard to write and I wanted better ways to express them.</p>
@@ -135,8 +135,6 @@ hard to write and I wanted better ways to express them.</p>
 be</em>?  How do these constructs enable writing the example programs that I had in mind? Which
 constructs should be the &ldquo;core&rdquo; ones of the language, and which ones should be defined in terms of
 them?</p>
-
-<!-- more -->
 
 <pre><code class="language-makam-hidden">tests : testsuite. %testsuite tests.
 </code></pre>
@@ -319,7 +317,7 @@ that computes the value that an expression evaluates to.</p>
 about how computation in Makam works.</p>
 
 <p>Say that instead of using Makam, we were using a functional language. One of the main operations
-of functional languages is <em>pattern-matching</em>: we try to match a terms against a pattern; if
+of functional languages is <em>pattern-matching</em>: we try to match a term against a pattern; if
 the match is successful, we proceed to take the corresponding branch.  Patterns are kind of like
 &ldquo;templates&rdquo; for terms: some parts are explicitly specified, while others are allowed to be
 arbitrary. Another way to say this, is that if terms are like trees, patterns are like &ldquo;trees with
@@ -661,7 +659,8 @@ run Stx Str Tm :-
 %end.
 </code></pre>
 
-<p>Let&rsquo;s try parsing and pretty-printing out:</p>
+<p>Let&rsquo;s try parsing and pretty-printing out. We will use the <code>syntax.run</code> predicate, which does
+either of these two depending on its arguments:</p>
 
 <pre><code class="language-makam">syntax.run expr &quot;{ foo: 1, bar: 2 + 2 }&quot; Expr ?
 syntax.run expr String (record [ mkfield &quot;foo&quot; (intconst 5) ]) ?
@@ -755,7 +754,6 @@ language in Makam, and more on the basics of higher-order logic programming.</p>
  <a class="footnote-return" href="#fnref:4"><sup>[return]</sup></a></li>
 </ol>
 </div>
-
             </div>
         </div>
 	</div>
