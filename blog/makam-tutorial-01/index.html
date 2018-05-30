@@ -23,18 +23,8 @@
 
   <link rel="stylesheet" href="https://astampoulis.github.io/css/custom.css">
 
-
-  <script src="https://unpkg.com/codemirror/lib/codemirror.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/codemirror/lib/codemirror.css" />
-  <script src="https://unpkg.com/codemirror/mode/javascript/javascript.js"></script>
-  <script src="https://unpkg.com/codemirror/mode/shell/shell.js"></script>
-  <script src="https://unpkg.com/codemirror/addon/mode/simple.js"></script>
-  <script src="https://unpkg.com/codemirror/addon/runmode/runmode.js"></script>
-  <script src="https://unpkg.com/makam-webui/makam-codemirror.js"></script>
-  <script src="https://unpkg.com/makam-webui/makam-webui.js"></script>
-  <script type="text/javascript">
-    makamWebUIOnLoad({ env: "prod", urlOfDependency: (filename) => new URL("../" + filename, document.baseURI).href });
-  </script>
+  <script language="javascript">window.makamWebUIOptions = { env: "prod", urlOfDependency: (filename) => new URL("../" + filename, document.baseURI).href };</script>
+  <script src="https://unpkg.com/makam-webui"></script>
 
   
   <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
@@ -128,6 +118,9 @@ for a tight feedback loop and for iterating quickly.</em></p>
 
 <p></p>
 
+<pre><code class="language-makam-hidden">tests : testsuite. %testsuite tests.
+</code></pre>
+
 <p>Some time ago I was designing and implementing a language: there was a class of programs that were
 hard to write and I wanted better ways to express them.</p>
 
@@ -135,9 +128,6 @@ hard to write and I wanted better ways to express them.</p>
 be</em>?  How do these constructs enable writing the example programs that I had in mind? Which
 constructs should be the &ldquo;core&rdquo; ones of the language, and which ones should be defined in terms of
 them?</p>
-
-<pre><code class="language-makam-hidden">tests : testsuite. %testsuite tests.
-</code></pre>
 
 <p>What does it mean to use the language? How do you write programs in it &ndash; what&rsquo;s the syntax like,
 what information can one get about their programs (and how much of it can be inferred)?  What do the
@@ -353,10 +343,6 @@ Matching them against each other might force instantiations on either one of the
 them (in different parts of them); some parts might even remain unknown after the unification. The
 unknown parts are called <em>unification variables</em> and are denoted with identifiers starting with an
 uppercase letter, whereas the identifiers of normal term constructors start with a lowercase letter.</p>
-
-<pre><code class="language-makam-hidden">unify : A -&gt; A -&gt; prop.
-unify X X.
-</code></pre>
 
 <pre><code class="language-makam">unify (add (intconst N1) X2) (add X1 (intconst N2)) ?
 </code></pre>
@@ -650,13 +636,6 @@ field : syntax field.
 
 &gt;&gt;).
 `( syntax.def_toplevel_js expr ).
-</code></pre>
-
-<pre><code class="language-makam-hidden">%extend syntax.
-run : syntax A -&gt; string -&gt; A -&gt; prop.
-run Stx Str Tm :-
-  if (refl.isunif Str) then syntax.pretty Stx Tm Str else syntax.parse_opt Stx Str Tm.
-%end.
 </code></pre>
 
 <p>Let&rsquo;s try parsing and pretty-printing out. We will use the <code>syntax.run</code> predicate, which does

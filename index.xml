@@ -24,6 +24,9 @@ for a tight feedback loop and for iterating quickly.&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;/p&gt;
 
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;tests : testsuite. %testsuite tests.
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;p&gt;Some time ago I was designing and implementing a language: there was a class of programs that were
 hard to write and I wanted better ways to express them.&lt;/p&gt;
 
@@ -31,9 +34,6 @@ hard to write and I wanted better ways to express them.&lt;/p&gt;
 be&lt;/em&gt;?  How do these constructs enable writing the example programs that I had in mind? Which
 constructs should be the &amp;ldquo;core&amp;rdquo; ones of the language, and which ones should be defined in terms of
 them?&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;tests : testsuite. %testsuite tests.
-&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;What does it mean to use the language? How do you write programs in it &amp;ndash; what&amp;rsquo;s the syntax like,
 what information can one get about their programs (and how much of it can be inferred)?  What do the
@@ -249,10 +249,6 @@ Matching them against each other might force instantiations on either one of the
 them (in different parts of them); some parts might even remain unknown after the unification. The
 unknown parts are called &lt;em&gt;unification variables&lt;/em&gt; and are denoted with identifiers starting with an
 uppercase letter, whereas the identifiers of normal term constructors start with a lowercase letter.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;unify : A -&amp;gt; A -&amp;gt; prop.
-unify X X.
-&lt;/code&gt;&lt;/pre&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-makam&#34;&gt;unify (add (intconst N1) X2) (add X1 (intconst N2)) ?
 &lt;/code&gt;&lt;/pre&gt;
@@ -546,13 +542,6 @@ field : syntax field.
 
 &amp;gt;&amp;gt;).
 `( syntax.def_toplevel_js expr ).
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;%extend syntax.
-run : syntax A -&amp;gt; string -&amp;gt; A -&amp;gt; prop.
-run Stx Str Tm :-
-  if (refl.isunif Str) then syntax.pretty Stx Tm Str else syntax.parse_opt Stx Str Tm.
-%end.
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Let&amp;rsquo;s try parsing and pretty-printing out. We will use the &lt;code&gt;syntax.run&lt;/code&gt; predicate, which does
