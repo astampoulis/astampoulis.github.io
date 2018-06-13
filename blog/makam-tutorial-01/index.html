@@ -112,11 +112,11 @@
             </div>
 
             <div class="post-content">
-                <p><em>In this post, we&rsquo;ll implement a toy interpreter for a small functional language. We will use Makam,
-which is a language that helps in the &lsquo;initial spiking phase&rsquo; of designing a new language, allowing
-for a tight feedback loop and for iterating quickly.</em></p>
+                
 
-<p></p>
+<p><em>In this post, we&rsquo;ll implement a toy interpreter for a small functional language. We will use Makam,
+a metalanguage that helps in the &lsquo;initial spiking/prototyping phase&rsquo; of designing a new language, allowing
+for a tight feedback loop and for iterating quickly.</em></p>
 
 <pre><code class="language-makam-hidden">tests : testsuite. %testsuite tests.
 </code></pre>
@@ -129,25 +129,24 @@ be</em>?  How do these constructs enable writing the example programs that you h
 constructs should be the &ldquo;core&rdquo; ones of the language, and which ones should be defined in terms of
 them?</p>
 
-<p>What does it mean to use the language? How do you write programs in it &ndash; what&rsquo;s the syntax like,
+<p>What does it mean to use the language? How do you write programs in it — what&rsquo;s the syntax like,
 what information can one get about their programs (and how much of it can be inferred)?  What do the
-constructs of the language mean &ndash; how do you compute with them, how do they relate to the
+constructs of the language mean — how do you compute with them, how do they relate to the
 constructs in existing languages?</p>
 
 <p>Coming up with answers to these questions is an iterative process: you can start with some answers,
 try to write example programs, see what works and what does not, and adapt accordingly. Implementing
 the language is quite crucial to this process: actually using the language reveals patterns that are
-important but that you couldn&rsquo;t necessarily have found otherwise &ndash; so that informs how to refine
+important but that you couldn&rsquo;t necessarily have found otherwise — so that informs how to refine
 the language further and what constructs to add.</p>
 
 <p>Still, implementing a language takes a long time, which hinders this experimentation and refinement
-process. There is a long &ldquo;feedback&rdquo; loop involved between having a new language design idea and
-having a working (even toy-ish) implementation of it.</p>
+process. There is <em>typically</em> a long feedback loop involved between having a new language design idea and
+having a working (even toy-ish) implementation of it&hellip; but there doesn&rsquo;t have to be!</p>
 
-<p>This is why I started working on the design and implementation of <strong>Makam</strong>, which is a
-<strong>metalanguage</strong>: a language to help with designing and implementing (prototypes of) new
-languages. It aims to minimize the feedback loop involved when designing a language, allowing
-you to iterate and validate your language ideas quickly.</p>
+<p>Minimizing this feedback loop is exactly why I have been working on the design and implementation of
+<strong>Makam</strong>, a <strong>metalanguage</strong> that helps with the design and implementation of (prototypes of) new
+languages. This way it allows you to iterate, validate and refine your language ideas quickly.</p>
 
 <p>Makam is a dialect of <a href="http://www.lix.polytechnique.fr/~dale/lProlog/">λProlog</a> and is hence a
 <em>higher-order logic programming language</em> (more on what that means later); I worked on it
@@ -156,17 +155,23 @@ development has been on an on-and-off basis as a personal project while
 at <a href="http://www.originate.com">Originate</a>, but over the past six months or so I&rsquo;ve been working quite
 a bit on it.</p>
 
+<p>This post contains Makam code that you can run using the Play button on the bottom-right corner; you
+can also edit the final code block to try out your own examples (the second button will take you
+there). You can also follow
+the <a href="https://github.com/astampoulis/makam#installation">installation instructions</a> for Makam and run
+this post on your machine if
+you
+<a href="https://astampoulis.github.io/blog/makam-tutorial-01.md">download the source code for this post</a> and
+do &ldquo;<code>makam makam-tutorial-01.md -</code>&rdquo;.</p>
+
 <p>In this series of posts, we will use Makam to prototype various parts of a toy programming
-language. We will also talk through the current set of answers of the λProlog/Makam language design,
-in terms of what the base constructs are, and what can be programmed using those.</p>
+language. We will also talk through the current set of answers of the lambda-Prolog/Makam language
+design, in terms of what the base constructs are, and what can be programmed using those.</p>
 
 <p>A caveat before we start is that many things are work-in-progress. Though the base language and
-implementation is pretty well established at this point, Makam is still in a state of evolution and
+implementation are pretty well established at this point, Makam is still in a state of evolution and
 refinement. Mostly, I am exploring what further tools are needed for doing language prototyping
 effectively and implementing those for Makam, using Makam itself.</p>
-
-<p>So, welcome to the world of Makam. There are various levels of meta at play, some things are a bit
-of a mess, but there are some nice things going on.</p>
 
 <h1 id="expressing-the-main-constructs-of-our-language-abstract-syntax">Expressing the main constructs of our language: Abstract syntax</h1>
 
@@ -192,7 +197,7 @@ n &amp; \text{(integer constants)} &amp; ::= &amp; \cdots \\
 b &amp; \text{(boolean constants)} &amp; ::= &amp; \text{true} \; | \; \text{false}
 \end{array}$$</code></p>
 
-<p>In this notation, <em>expressions</em>, <em>string constants</em>, <em>integer constants</em> etc. are different <strong>sorts</strong> &ndash;
+<p>In this notation, <em>expressions</em>, <em>string constants</em>, <em>integer constants</em> etc. are different <strong>sorts</strong> —
 the different &ldquo;kinds of things&rdquo; that might be involved in the terms of our language.  For example,
 if we were encoding an imperative language that included statements and statement blocks, we would
 have separate sorts for them, like:</p>
@@ -221,7 +226,7 @@ for them is secondary: it is important in terms of actually writing down terms o
 in a way that is human-readable, but we could have different syntaxes for the same exact language.</p>
 
 <p>Instead, we can separate those two concerns into two parts: one where we just give an explicit name
-to each constructor and describe what its constituents are (how many are there and of what sorts) &ndash;
+to each constructor and describe what its constituents are (how many are there and of what sorts) —
 on paper, we could denote that with something like &ldquo;$\text{add}(e_1, e_2)$&ldquo;; and one where we
 describe what the real syntactic form for the constructor is when we write out a program in the
 language. When we talk about <strong>abstract syntax</strong>, we refer to the first part; and <strong>concrete
@@ -241,7 +246,8 @@ type. So lists of expressions are a different type than, say, lists of strings: 
 vs. <code>list string</code>. There&rsquo;s two ways to write down a list; either in the form <code>[1, 2, 3]</code>, or
 in the form <code>1 :: 2 :: 3 ::  Nil</code>, similar to other functional languages.</p>
 
-<p>With these in mind, we can define the constructors for expressions as follows:</p>
+<p>With these in mind, we can define the constructors for expressions as follows. This corresponds
+to the definition of the abstract syntax of our language, as mentioned above:</p>
 
 <pre><code class="language-makam">stringconst : (S: string) -&gt; expr.
 intconst : (I: int) -&gt; expr.
@@ -253,7 +259,7 @@ array : (ES: list expr) -&gt; expr.
 <p>So we first give the name of the constructor, like <code>add</code>, the arguments it takes (that is, its
 constituent parts), like <code>(E1: expr) (E2: expr)</code>, and the resulting sort that it belongs to, like
 <code>expr</code>, following the arrow.  The names of the arguments, like <code>E1</code> and <code>E2</code>, are only given as
-documentation. This helps sometimes to disambiguate between what each different argument is &ndash; for
+documentation. This helps sometimes to disambiguate between what each different argument is — for
 example, we could define the <code>if</code>-<code>then</code>-<code>else</code> statement as:</p>
 
 <pre><code class="language-makam-noeval">ifthenelse :
@@ -267,13 +273,16 @@ the abstract syntax tree for the concrete syntax <code>5 + 3</code> would be:</p
 
 <p>We would write this as <code>add (intconst 5) (intconst 3)</code> in Makam.</p>
 
-<p>One thing that might be weird at first looking at the definitions above for somebody coming from a
-language like Haskell or ML is that defining a new type and definining a new constructor are
-separate statements. Typically in functional languages we define datatypes and give all of their
-constructors as part of a single declaration. In Makam, this different style of declarations stems
-from the fact that we can define new constructors for an existing type at any point.  That&rsquo;s quite
-useful for experimentation &ndash; we can define a &lsquo;base version&rsquo; of a language first, and then try
-adding new constructs later, in a separate place, without changing the base definition.</p>
+<p>You might find something about the above definitions weird at first, coming from a language like
+Haskell from ML. Typically in functional languages we define datatypes and give all of their
+constructors as part of a single declaration. Here, however, we have defined new types and new
+constructors for those types as separate statements. In Makam, this different style of definitions
+allows us to define new constructors for an existing type at any point. This is a key departure of
+Makam/lambda-Prolog from traditional functional languages; the next post will be mostly about this
+feature and what it allows us to do. For the time being though, we can say that one case where this
+feature is useful is developing a language in stages: for example, we can define a &lsquo;base version&rsquo; of
+a language first, and then add some extra constructs later, in a separate place, without having to
+change the base definition.</p>
 
 <p>We have left the constructor for records out. We can view a record as a list of fields, where each
 field pairs together a key with a value:</p>
@@ -284,7 +293,7 @@ mkfield : (Key: string) (Val: expr) -&gt; field.
 </code></pre>
 
 <p>And that covers all the constructors we&rsquo;ll define for the time being. Now let&rsquo;s see how to actually
-define <em>computations</em> over these terms. Our example will be an interpreter for our language,
+define <em>computations</em> over these terms. Our example will be an interpreter for our language
 that computes the value that an expression evaluates to.</p>
 
 <h1 id="computation-in-logic-programming">Computation in logic programming</h1>
@@ -301,7 +310,7 @@ holes&rdquo;:</p>
 
 <p><center><img src="/blog/makam-tutorial-01-pic2.svg" alt="Pattern" width="300" /></center></p>
 
-<p>We give names to the holes, so as to be able to refer to them &ndash; these are the <em>pattern variables</em>.
+<p>We give names to the holes, so as to be able to refer to them — these are the <em>pattern variables</em>.
 Pattern matching basically tries to find a way to fill in these holes in the pattern so that it
 matches the term exactly.  So its result when it&rsquo;s successful is an instantiation (or substitution)
 for the pattern variables:</p>
@@ -329,7 +338,7 @@ on the right, we have two terms with potentially unknown parts in them, and we a
 reconcile them against each other. This process might force instantiations on either one of them,
 making previously unknown parts known, or even on both of them (in different parts of them). Some
 things might even remain unknown after the unification. To be able to refer to them, we give names
-to the unknown parts &ndash; so an unknown part is a special kind of a variable, referred to as a
+to the unknown parts — so an unknown part is a special kind of a variable, referred to as a
 <em>unification variables</em>.</p>
 
 <p><center><img src="/blog/makam-tutorial-01-pic4.svg" alt="Pattern" width="550" /></center></p>
@@ -362,34 +371,54 @@ where a &ldquo;function&rdquo; is applied, and unification will reconcile the kn
 instead of functions we talk about <em>predicates</em>: these describe relations between terms, without
 explicitly designating some of them as inputs and some as outputs. What is an input and what is an
 output depends on the arguments that the predicates are called with. Here is an example of the
-<code>plus</code> predicate, which is the moral equivalent of the <code>a + b</code> operation on integers:</p>
+<code>append</code> predicate for lists:</p>
 
-<pre><code class="language-makam">plus 1 2 X ?
-plus X 2 3 ?
-plus 1 X 3 ?
+<pre><code class="language-makam">append [1,2,3] [4,5,6] ZS ?
+append [1,2,3] YS [1,2,3,4,5,6] ?
+append XS [4,5,6] [1,2,3,4,5,6] ?
 </code></pre>
 
-<p>So the <code>plus A B C</code> predicate takes three arguments; the first two, <code>A</code>, <code>B</code>, are the operands, and
-<code>C</code>, the last one, is the result of the addition. However, the predicate can be used not only to
-find the result of <code>A + B</code>, but also to discover the value of <code>A</code> or <code>B</code> given the other operand and
-the result.</p>
+<p>So the <code>append XS YS ZS</code> predicate takes three lists as arguments; the first two, <code>XS</code>, <code>YS</code>, are
+the operands, and <code>ZS</code>, the last one, is the result of the append. However, the predicate can be
+used not only to find the result of appending a fully-known <code>YS</code> to <code>XS</code>, but also to discover the
+value of <code>XS</code> or <code>YS</code> given the other operand and the result. Here is the type of <code>append</code>:</p>
 
-<p>The type of the <code>plus</code> predicate is:</p>
-
-<pre><code class="language-makam-noeval">plus : (Op1: int) (Op2: int) (Result: int) -&gt; prop.
+<pre><code class="language-makam-noeval">append : (XS: list int) (YS: list int) (ZS: list int) -&gt; prop.
 </code></pre>
 
 <p>The name of the type <code>prop</code> comes from <em>proposition</em>: these are the statements that we can query
 upon, and might be viewed as the logic programming equivalent of the <em>expressions</em> of a functional
-programming language. So a fully applied predicate like <code>plus</code> is a proposition, and by querying
-about it as we did above, we are asking the Makam interpreter to find an instantiation for the
-unknown <em>unification variables</em> that makes the proposition hold.</p>
+programming language. So a fully applied predicate like <code>append XS YS ZS</code> is a proposition, and by
+querying about it as we did above, we are asking the Makam interpreter to find an instantiation for
+the unknown <em>unification variables</em> that makes the proposition hold.</p>
 
-<p>One might ask &ndash; why is this generalization to unification and relations instead of functions
-useful? One example where we can make good use of this in Makam is when implementing a type checking
-procedure for a language, where blurring the line between inputs and outputs allows us to get a type
-inferencing procedure essentially for free. But that is getting too much ahead of ourselves; we will
-see more on later posts.</p>
+<p>The <code>append</code> queries above might be surprising at first, so let&rsquo;s see how <code>append</code> is implemented.
+In logic programming, we implement a predicate by defining its <em>rules</em>: basically, we define the cases for
+which a certain proposition, like <code>append XS YS ZS</code> holds. Each rule has a <em>goal</em> and optional <em>premises</em>,
+written roughly as <code>goal :- premises</code> (note the &ldquo;<code>:-</code>&rdquo; which can be read as <strong>&ldquo;when&rdquo;</strong>). The way
+these rules are executed is like this: given the current query <code>Q</code> that we are trying to solve, we
+attempt to unify it with the goal of each rule; if unification is successful, we proceed to the
+premises, treating them as subsequent queries that need to be satisfied.</p>
+
+<p>The rules that make up <code>append</code> are these:</p>
+
+<pre><code class="language-makam-noeval">append [] YS YS.
+append (X :: XS) YS (X :: XSYS) :- append XS YS XSYS.
+</code></pre>
+
+<p>The first rule says: appending <code>YS</code> to an empty list results in <code>YS</code>. The second rule says:
+appending <code>YS</code> to a list that has <code>X</code> as a head and <code>XS</code> as tails results in a list with <code>X</code>
+as a head and <code>XSYS</code> as a tail, <strong>when</strong> appending <code>YS</code> to <code>XS</code> results in <code>XSYS</code>.</p>
+
+<p>It&rsquo;s a good exercise to try to convince yourself <em>why</em> the queries we saw above actually work,
+based on the small explanation I gave of how rules are executed. There really is not a lot of
+magic going on!</p>
+
+<p>One might ask — why is it useful to have a language that relies on unification and relations instead
+of functions? One example is that when implementing a type checking procedure for a language,
+blurring the line between inputs and outputs allows us to get a type inferencing procedure
+essentially for free. But that is getting too much ahead of ourselves; we will see more in later
+posts.</p>
 
 <p>With this out of the way, it is time to try our hand at writing our first predicate over the
 expressions we defined.</p>
@@ -410,14 +439,7 @@ arguments.</p>
 </code></pre>
 
 <p>Of course, this query fails at this point, as we have not given any kind of implementation for the
-<code>eval</code> predicate. We do this by giving <em>rules</em> for the predicate: basically, we define the cases for
-which the <code>eval Expr Value</code> proposition holds. Each rule has a <em>goal</em> and optional <em>premises</em>,
-written roughly as <code>goal :- premises</code> (note the &ldquo;<code>:-</code>&rdquo; which can be read as <strong>&ldquo;when&rdquo;</strong>). The way
-these rules are executed is like this: given the current query <code>Q</code> that we are trying to solve, we
-attempt to unify it with the goal of each rule; if unification is successful, we proceed to the
-premises, treating them as subsequent queries that need to be satisfied.</p>
-
-<p>To start with, here are the rules that we would add to evaluate integer constants and integer
+<code>eval</code> predicate. So let&rsquo;s start with adding some rules to evaluate integer constants and integer
 addition:</p>
 
 <pre><code class="language-makam">eval (intconst I) (intconst I).
@@ -426,6 +448,9 @@ eval (add E1 E2) (intconst N) :-
   eval E2 (intconst N2),
   plus N1 N2 N.
 </code></pre>
+
+<p>(Note the distinction between <code>add</code> which is one of the constructors of expressions that we have
+defined, and <code>plus</code>, which is a built-in predicate for adding integers together.)</p>
 
 <p>The first rule says: integer constants evaluate to themselves (because they are already values).
 The second one can be read as: the <code>add</code> expression evaluates to an integer constant <code>N</code>, <em>when</em>
@@ -494,9 +519,9 @@ eval (array (HeadExpr :: TailExprs))
 &gt;&gt; Value := array [ intconst 3, stringconst &quot;foobar&quot; ].
 </code></pre>
 
-<p>(As an aside &ndash; we can do better than this. Remember when we said that Makam is a <em>higher-order</em> logic
-programming language? That means that we can define higher-order predicates &ndash; predicates that
-take other predicates as arguments &ndash; similarly to how we can define higher-order functions
+<p>(As an aside — we can do better than this. Remember when we said that Makam is a <em>higher-order</em> logic
+programming language? That means that we can define higher-order predicates — predicates that
+take other predicates as arguments — similarly to how we can define higher-order functions
 in a higher-order functional programming language. One example of such a predicate is <code>map</code>
 for lists, which is defined as follows in the Makam standard library:</p>
 
@@ -511,13 +536,13 @@ map Pred (X :: XS) (Y :: YS) :- Pred X Y, map Pred XS YS.
 
 <p>More on this on a later installment.)</p>
 
-<p>Evaluating records is a little more complicated. We need to
-evaluate the expressions contained within them, so that <code>{ foo: 1 + 1, bar: 2 + 2 }</code>
-evaluates to <code>{ foo: 2, bar: 4 }</code>. However, we also need to decide
-what to do about duplicate key entries, as in <code>{ foo: 1, foo: 2 }</code>. For that, we will follow the JavaScript
-semantics for objects: duplicate entries for the same key are allowed, and
-the last occurrence of the same key is the one that gets picked &ndash; so the
-previous object evaluates to <code>{ foo: 2 }</code>.</p>
+<p>Evaluating records is a little more complicated. We need to evaluate the expressions contained
+within them, so that <code>{ foo: 1 + 1, bar: 2 + 2 }</code> evaluates to <code>{ foo: 2, bar: 4 }</code>. However, we
+also need to decide what to do about duplicate key entries, as in <code>{ foo: 1, foo: 2 }</code>. For that, we
+will follow the JavaScript semantics for objects: duplicate entries for the same key are allowed,
+and the last occurrence of the same key is the one that gets picked — so the previous object
+evaluates to <code>{ foo: 2 }</code>. We won&rsquo;t follow the JavaScript semantics when it comes to ordering the
+fields: instead, we will maintain the order of that appears in the source.</p>
 
 <p>Let&rsquo;s see how to implement this in Makam. Here&rsquo;s a first attempt where we
 do not handle duplicate keys properly:</p>
@@ -533,7 +558,7 @@ eval (record (mkfield Key Expr :: Rest))
 of a key (where the key does not appear in subsequent fields) and one for any earlier
 occurrences. In this second case, the field can safely be ignored, as the language we are encoding
 does not have any side effects. To distinguish the two cases, we can use an auxiliary predicate
-that succeeds whenever a key exists within a list of fields:</p>
+<code>contains_key</code> (so a new <code>prop</code>), that succeeds whenever a key exists within a list of fields:</p>
 
 <pre><code class="language-makam">contains_key : (Fields: list field) (Key: string) -&gt; prop.
 contains_key (mkfield Key Expr :: Rest) Key.
@@ -573,7 +598,7 @@ eval (record (mkfield Key Expr :: Rest))
 <h1 id="defining-the-concrete-syntax-for-our-language">Defining the concrete syntax for our language</h1>
 
 <p>One issue with our interpreter, which is quite evident in the query above, is that we have to use
-abstract syntax for writing down the terms of our language &ndash; and that&rsquo;s not always pleasant.
+abstract syntax for writing down the terms of our language — and that&rsquo;s not always pleasant.
 Abstract syntax is often quite long-winded and verbose, even for simple terms.  It would be
 nice to be able to use concrete syntax instead, to write queries like:</p>
 
@@ -591,15 +616,13 @@ syntax terms that we have defined. So we need to define a predicate with the typ
 
 <p>Let&rsquo;s ruminate on this: given a query on <code>parse_expr</code>, what would happen if the second argument was a
 fully-known abstract syntax tree, whereas the first argument was fully unknown? In that case, we would
-be reconstructing the concrete syntax of an abstract syntax tree &ndash; namely, we would be using this
+be reconstructing the concrete syntax of an abstract syntax tree — namely, we would be using this
 predicate as a pretty-printer for our terms.<sup class="footnote-ref" id="fnref:2"><a rel="footnote" href="#fn:2">2</a></sup> So maybe <code>parse_expr</code> is not such a great name for our
 predicate, since we could use it both as a parser and a pretty-printer of expressions.</p>
 
 <p>How about writing the predicate itself? Makam already has a <code>syntax</code> library that can help us
 implement syntax predicates like these by only giving a grammar for our language, similar to how
-parser generators are used in other languages. The details of how the library works is a topic for
-another time; it is also a relatively recent development, so its exact details might change.  For
-now, I will just give an example of how to use it for the language we have defined in this post, and will
+parser generators are used in other languages. I will give an example of how to use it for the language we have defined in this post, and will
 just say that the parsing aspect of the library is based
 on <a href="https://pdos.csail.mit.edu/papers/parsing:popl04.pdf">PEG parsing</a><sup class="footnote-ref" id="fnref:3"><a rel="footnote" href="#fn:3">3</a></sup> and I am using an
 adaptation
@@ -662,7 +685,7 @@ syntax.run expr String (record [ mkfield &quot;foo&quot; (intconst 5) ]) ?
 <p>OK, let&rsquo;s unpack the code above a bit and explain what goes into it. The toplevel syntax constructor
 is <code>expr</code>, which we will use to parse and pretty-print expressions of our language. We also make use
 of two additional auxiliary syntaxes, one for base expressions and one for fields. <code>expr</code> represents
-the higher-precedence part of expressions &ndash; right now, this just stands for infix addition &ndash; while
+the higher-precedence part of expressions — right now, this just stands for infix addition — while
 base expressions are the lower-precedence ones, which is everything else. The syntax library does
 not presently include any explicit support for describing precedence, and that&rsquo;s why we had to split
 into top-level and base expressions manually. Each syntax rule specifies the constructor that it is
@@ -701,6 +724,9 @@ evalstring ExprStr ValueStr :-
   syntax.run expr ValueStr Value.
 </code></pre>
 
+<p>So what we do is that we first parse the concrete string; evaluate the expression
+to a value; and pretty-print the resulting value into concrete syntax.</p>
+
 <p>We can now issue queries to try out our whole implementation so far. Note that
 this query block is editable, so you can try your own queries as well:</p>
 
@@ -730,7 +756,7 @@ language in Makam, and more on the basics of higher-order logic programming.</p>
 <ol>
 <li id="fn:1">Negation in logic programming languages is a big topic, mostly because it breaks many of the invariants that hold about the language otherwise. For example: adding a new rule only makes more queries succeed, instead of making queries fail when they were previously succeeding; this does not hold in the presence of negation.
  <a class="footnote-return" href="#fnref:1"><sup>[return]</sup></a></li>
-<li id="fn:2">The reality is more complicated of course &ndash; using the same predicate for both kinds of queries is not always possible for free, or will not always terminate. In a later post, we will explore this more in-depth.
+<li id="fn:2">The reality is more complicated of course — using the same predicate for both kinds of queries is not always possible for free, or will not always terminate. In a later post, we will explore this more in-depth.
  <a class="footnote-return" href="#fnref:2"><sup>[return]</sup></a></li>
 <li id="fn:3">Bryan Ford. 2004. <em>Parsing expression grammars: a recognition-based syntactic foundation</em>. In Proceedings of the 31st ACM SIGPLAN-SIGACT symposium on Principles of programming languages (POPL &lsquo;04). ACM, New York, NY, USA, 111-122. DOI: <a href="http://dx.doi.org/10.1145/964001.964011">http://dx.doi.org/10.1145/964001.964011</a>
  <a class="footnote-return" href="#fnref:3"><sup>[return]</sup></a></li>
@@ -738,6 +764,7 @@ language in Makam, and more on the basics of higher-order logic programming.</p>
  <a class="footnote-return" href="#fnref:4"><sup>[return]</sup></a></li>
 </ol>
 </div>
+
             </div>
         </div>
 	</div>
