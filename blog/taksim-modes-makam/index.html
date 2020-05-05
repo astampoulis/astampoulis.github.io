@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+  
+  <meta charset="utf-8">
+  <title>A language design taksim on mode declarations for Makam</title>
+  <meta name="description" content="A language design taksim on mode declarations for Makam">
+  <meta name="author" content="Antonis Stampoulis">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://astampoulis.github.io/css/fonts.css">
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css" integrity="sha256-Q0zCrUs2IfXWYx0uMKJfG93CvF6oVII21waYsAV4/8Q=" crossorigin="anonymous" />
+  
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css" integrity="sha256-YqnnS/cQ7vE7gfVjdfx+JMi5EFD6m6Zqdemj81rs6PU=" crossorigin="anonymous" />
+
+  <link rel="stylesheet" href="https://astampoulis.github.io/css/custom.css">
+
+  <script language="javascript">window.makamWebUIOptions = { env: "prod", urlOfDependency: (filename) => new URL("../" + filename, document.baseURI).href };</script>
+  <script src="https://unpkg.com/makam-webui"></script>
+
+  
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+       tex2jax: {
+           inlineMath: [['$','$'], ['$-', '-$'], ['\\(','\\)']],
+           displayMath: [['$$','$$']],
+           processEscapes: true,
+           processEnvironments: true,
+           skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+           TeX: { equationNumbers: { autoNumber: "AMS" },
+                  extensions: ["AMSmath.js", "AMSsymbols.js"] }
+       }
+   });
+  </script>
+
+  
+  
+  <link href="https://astampoulis.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Antonis Stampoulis" />
+  <link href="https://astampoulis.github.io/index.xml" rel="feed" type="application/rss+xml" title="Antonis Stampoulis" />
+
+</head>
+<body>
+<div class="container">
+
+
+<div class="header pure-g">
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+    <div class="pure-u-11-12 pure-u-md-1-2">
+        <div class="desktop pure-menu pure-menu-horizontal nav-menu">
+            
+            <a href="/" class="site-title pure-menu-heading">Antonis Stampoulis</a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/" class="pure-menu-link">About</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="https://github.com/astampoulis" class="pure-menu-link">GitHub</a>
+                </li>
+            </ul>
+            <div style="clear: both;"></div>
+        </div>
+        <div class="mobile pure-menu nav-menu">
+            <a href="/" class="pure-menu-heading" id="toggle-home">Antonis Stampoulis</a>
+            <a href="#" id="toggle-btn">&#9776;</a>
+            <ul class="pure-menu-list" id="toggle-content" style="display:none;">
+                
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/blog" class="pure-menu-link">Blog</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="https://astampoulis.github.io/" class="pure-menu-link">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+</div>
+
+
+<div class="pure-g" id="maincontainer">
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+	<div class="pure-u-11-12 pure-u-md-1-2">
+        <div class="post">
+
+            <div class="post-title">
+                <p class="footnote">
+                    
+                    <time class="">2020-05-01</time>
+                    
+		    
+
+                    
+                    
+
+                    
+
+                    
+                </p>
+                
+                <h1>A language design taksim on mode declarations for Makam</h1>
+                
+            </div>
+
+            <div class="post-content">
+                <p>In this post, we will explore a few design ideas related to integrating mode declarations into Makam, using bidirectional typing as an example. This feature is still in the design phase, so I&rsquo;d be glad to hear comments and ideas!</p>
+
+<p></p>
+
+<h2 id="todo">todo</h2>
+
+<p>This post is WIP. To keep track of updates, follow this <a href="https://github.com/astampoulis/website-source/pull/2">PR</a>.</p>
+
+<h2 id="intro">intro</h2>
+
+<p>Recommended soundtrack: <a href="https://open.spotify.com/album/1Agh6GiahtO2bt4t5zLJR2">Kalthoum (Alf Leila Wa Leila), by Ibrahim Maalouf</a></p>
+
+<p>Thoughts for this post came from reading <a href="http://research.cs.queensu.ca/home/joshuad/">J. Dunfield</a> and <a href="https://semantic-domain.blogspot.com/">Neel Krishnaswami</a>&rsquo;s <a href="https://arxiv.org/abs/1908.05839">survey on bidirectional typing</a>, as well as other discussions.</p>
+
+<p>You can run the code in this post in your browser, through the
+Makam Web UI. Click on the play button on the bottom-right corner, or press Ctrl+Enter!</p>
+
+<h2 id="setup">setup</h2>
+
+<pre><code class="language-makam-hidden">tests : testsuite. %testsuite tests.
+</code></pre>
+
+<p>One of the distinguishing characteristics of logic programming languages is being able to use predicates in multiple modes.
+The same predicate can be used both for computing what is typically the output parameter, or what is typically an input parameter<sup class="footnote-ref" id="fnref:1"><a rel="footnote" href="#fn:1">1</a></sup>.
+For example, <code>append</code> can be used both to append one list to another, but also to find which list we need to append to one to get a certain result:</p>
+
+<pre><code class="language-makam">append [1, 2, 3] [4, 5, 6] Result ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes:
+&gt;&gt; Result := [1, 2, 3, 4, 5, 6].
+</code></pre>
+
+<pre><code class="language-makam">append [1, 2, 3] InputList2 [1, 2, 3, 4, 5] ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes:
+&gt;&gt; InputList2 := [4, 5].
+</code></pre>
+
+<p>Still, in many cases, it is useful to be able to specify and restrict the modes under which a predicate is used.
+This is especially useful when we are trying to accurately model existing type inferencing algorithms.
+This comes up in bidirectional typing for example, where we have two different typing judgments with different modes:</p>
+
+<ul>
+<li>$\Gamma \vdash e \Rightarrow \tau$, the type <em>synthesis</em> or type <em>inference</em> judgment, where the type $\tau$ is unknown and is being synthesized from $e$</li>
+<li>$\Gamma \vdash e \Leftarrow \tau$, the type <em>analysis</em> or type <em>checking</em> judgment, where the type $\tau$ is known and is being checked against $e$</li>
+</ul>
+
+<pre><code class="language-makam-hidden">expr : type.
+typ : type.
+
+annot : expr -&gt; typ -&gt; expr.
+eunit : expr.
+lambda : (expr -&gt; expr) -&gt; expr.
+app : expr -&gt; expr -&gt; expr.
+
+tunit : typ.
+arrow : typ -&gt; typ -&gt; typ.
+</code></pre>
+
+<p>Modeling these judgments as predicates in λProlog/Makam, their types are the same:</p>
+
+<pre><code class="language-makam-noeval">type_synth : expr -&gt; typ -&gt; prop.
+type_check : expr -&gt; typ -&gt; prop.
+</code></pre>
+
+<p>However, the two predicates differ in terms of how they are supposed to be used. In both of them, the expression argument is supposed to be known, so it&rsquo;s an input parameter; in the analysis predicate, the type is an input parameter; whereas in the synthesis predicate, the type argument is an output parameter, since it is unknown and what the predicate will compute.</p>
+
+<p>To capture this intention of how predicates are supposed to be used, <em>mode declarations</em> are common in logic programming (and higher-order logic programming) languages; in that way, we can turn off the &ldquo;generative&rdquo; behavior of predicates for input parameters. These could look something like this, using informal syntax:</p>
+
+<pre><code>mode type_synth (input output).
+mode type_check (input input).
+</code></pre>
+
+<p>Makam does not support mode declarations though. This brings us to the main thing we&rsquo;ll explore in this post: can we add support for them, without changing the core language?</p>
+
+<p>Here&rsquo;s the structure of the rest of this.</p>
+
+<ul>
+<li>What happens if we transcribe the bidirectional system for the STLC directly? <a href="#example-naively">→ example, naively</a></li>
+<li>How can we model bidirectional typing accurately? <a href="#example-manually">→ example, manually</a></li>
+<li>It would be nice to be able to fix this just by adding a mode declaration for <code>type_synth</code> and <code>type_check</code>. Can we add mode declarations to Makam? Is there a way to do this without changing the core language? <a href="#modal-makam">→ modal makam</a></li>
+<li>Do simple mode declarations provide enough generality? (TODO) <a href="#todo">→ modal makam, take 2</a></li>
+<li>Can we turn the bidirectional recipe into a Makam program, to &ldquo;bidirectionalize&rdquo; an existing typing declaration? (TODO) <a href="#todo">→ writing recipes in makam</a></li>
+</ul>
+
+<h2 id="example-naively">example, naively</h2>
+
+<pre><code class="language-makam-hidden">type_of_var : expr -&gt; typ -&gt; prop.
+</code></pre>
+
+<pre><code class="language-makam-hidden">%extend naive.
+type_synth : expr -&gt; typ -&gt; prop.
+type_check : expr -&gt; typ -&gt; prop.
+</code></pre>
+
+<p>As a first step, let&rsquo;s look at the basic bidirectional typing rules for the simply-typed lambda calculus, and try to transcribe them directly to Makam. Following the definitions in the <a href="https://arxiv.org/pdf/1908.05839">survey</a> paper mentioned above (Figure 1), the rules are:</p>
+
+<p><center><img src="/blog/taksim-modes-bidir-spec.svg" alt="Abstract syntax tree" width="500" /></center></p>
+
+<p>Transcribing them to Makam should be simple:</p>
+
+<pre><code class="language-makam">type_synth X A :-
+  type_of_var X A.
+
+type_check E B :-
+  type_synth E A, unify A B.
+
+type_synth (annot E A) A :-
+  type_check E A.
+
+type_check eunit tunit.
+
+type_check (lambda E) (arrow A1 A2) :-
+  (x:expr -&gt; type_of_var x A1 -&gt; type_check (E x) A2).
+
+type_synth (app E1 E2) B :-
+  type_synth E1 (arrow A B),
+  type_check E1 A.
+</code></pre>
+
+<p>Here I am using the additional predicate <code>type_of_var</code> to model the context $\Gamma$.</p>
+
+<p>This seems to work:</p>
+
+<pre><code class="language-makam">type_check (lambda (fun x =&gt; x)) (arrow tunit tunit) ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes.
+</code></pre>
+
+<p>As we expect though, this does not model the bidirectional system accurately. For example,
+it is able to discover a type <code>T</code> when we are using the type-checking judgment:</p>
+
+<pre><code class="language-makam">type_check (lambda (fun x =&gt; x)) T ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes:
+&gt;&gt; T := arrow T1 T1.
+</code></pre>
+
+<pre><code class="language-makam-hidden">%end.
+</code></pre>
+
+<p>An accurate model of the bidirectional system should fail instead,
+as the type <code>T</code> is unknown and can thus not be used with the
+type-checking judgment.</p>
+
+<p>So instead, let&rsquo;s try to transcribe the system more accurately.</p>
+
+<h2 id="example-manually">example, manually</h2>
+
+<pre><code class="language-makam-hidden">%extend manual.
+type_check : expr -&gt; typ -&gt; prop.
+type_synth : expr -&gt; typ -&gt; prop.
+</code></pre>
+
+<p>To start, let us focus on just one indicative checking rule:</p>
+
+<p><center><img src="/blog/taksim-modes-bidir-focused.svg" alt="Abstract syntax tree" width="300" /></center></p>
+
+<p>To encode this rule properly, we need to make sure
+that the type <code>T</code> of <code>type_check E T</code> is treated as an input.
+The key difference is that
+given an unknown type like <code>T</code> as input, we should not unify it with the
+<code>arrow A1 A2</code> term; instead, we should check that <code>T</code> <em>already</em>
+looks like <code>arrow A1 A2</code>. So we should perform <em>pattern matching</em>
+rather than <em>unification</em> with <code>arrow A1 A2</code>. Fortunately,
+Makam provides us with a <code>pattern_match</code> implementation that behaves
+as expected:</p>
+
+<pre><code class="language-makam">unify (arrow A1 A2) T ?
+pattern_match (arrow A1 A2) T ?
+pattern_match (arrow A1 A2) (arrow tunit tunit) ?
+pattern_match (arrow A1 A2) (arrow C D) ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; unify (arrow A1 A2) T ?
+&gt;&gt; Yes:
+&gt;&gt; T := arrow A1 A2, A1 := A1, A2 := A2.
+
+&gt;&gt; pattern_match (arrow A1 A2) T ?
+&gt;&gt; Impossible.
+
+&gt;&gt; pattern_match (arrow A1 A2) (arrow tunit tunit) ?
+&gt;&gt; Yes:
+&gt;&gt; A1 := tunit, A2 := tunit.
+
+&gt;&gt; pattern_match (arrow A1 A2) (arrow C D) ?
+&gt;&gt; Yes:
+&gt;&gt; A1 := C, A2 := D, C := C, D := D.
+</code></pre>
+
+<p>(The first argument to <code>pattern_match</code> is the pattern, and the second is the scrutinee).</p>
+
+<p>So encoding the arrow introduction rule accurately is simple &ndash; we
+can just use <code>pattern_match</code> instead of unifying directly:</p>
+
+<pre><code class="language-makam">type_check (lambda E) T :-
+  pattern_match (arrow A1 A2) T,
+  (x:expr -&gt; type_of_var x A1 -&gt; type_check (E x) A2).
+</code></pre>
+
+<p>To be entirely accurate, we should use pattern matching for the
+expression argument, since we expect that to be an input too. But
+we&rsquo;ll keep that as-is for now and revisit that later.</p>
+
+<p>Transcribing the rest of the rules, we proceed similarly for the
+checking rules, and there is not much we need to change for synthesis rules.</p>
+
+<pre><code class="language-makam">type_synth X A :-
+  type_of_var X A.
+
+type_check E B :-
+  type_synth E A, unify A B.
+
+type_synth (annot E A) A :-
+  type_check E A.
+
+type_check eunit T :-
+  pattern_match tunit T.
+
+type_synth (app E1 E2) B :-
+  type_synth E1 (arrow A B),
+  type_check E1 A.
+</code></pre>
+
+<p>Let&rsquo;s try a few examples to see what we did:</p>
+
+<pre><code class="language-makam">type_check (lambda (fun x =&gt; x)) (arrow tunit tunit) ?
+type_check (lambda (fun x =&gt; x)) T ?
+type_check (lambda (fun x =&gt; x)) (arrow tunit X) ?
+type_check (lambda (fun x =&gt; x)) (arrow tunit (arrow tunit tunit)) ?
+</code></pre>
+
+<p>These all behave as expected.</p>
+
+<pre><code class="language-makam-hidden">&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow tunit tunit) ?
+&gt;&gt; Yes.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) T ?
+&gt;&gt; Impossible.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow tunit X) ?
+&gt;&gt; Yes:
+&gt;&gt; X := tunit.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow (arrow tunit tunit) X) ?
+&gt;&gt; Yes:
+&gt;&gt; X := arrow tunit tunit.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow tunit (arrow tunit tunit)) ?
+&gt;&gt; Impossible.
+</code></pre>
+
+<pre><code class="language-makam-hidden">%end.
+</code></pre>
+
+<p>So the recipe for enforcing a proper mode is pretty simple: for input arguments, we should use pattern matching rather than unification.
+Is there some way that we can extend Makam to support this recipe?</p>
+
+<h2 id="modal-makam">modal makam</h2>
+
+<pre><code class="language-makam-hidden">(* stdlib extensions required for this. will open a PR for Makam soon *)
+
+%extend refl.
+
+decompose_term : [Full Head] Full -&gt; Head -&gt; args Head Full -&gt; prop.
+decompose_term Term Head Args :-
+  refl.headargs Term Head ArgsDyn,
+  dyn.to_args ArgsDyn Args.
+
+recompose_term : [Full Head] Head -&gt; args Head Full -&gt; Full -&gt; prop.
+recompose_term Head Args Term :-
+  args.applyfull Head Args Term.
+
+%end.
+</code></pre>
+
+<pre><code class="language-makam-hidden">%extend modes_v1.
+</code></pre>
+
+<p>Here&rsquo;s a first approach: we can do some meta-programming in Makam, transforming predicates that utilize a specific mode according to the recipe. We will have to perform that transformation for all rules of the relevant predicates.</p>
+
+<p>Let&rsquo;s see how this would work. First of all, we can define <code>mode</code> as a predicate, that will be used to specify the mode for predicates. We&rsquo;ll make light use of GADTs to make sure that when specifying a mode, the number of arguments we specify matches the number of arguments of the predicate.</p>
+
+<pre><code class="language-makam">argument_mode : type.
+input, output : argument_mode.
+
+mode_spec : type -&gt; type.
+nil : mode_spec prop.
+cons : argument_mode -&gt; mode_spec B -&gt; mode_spec (A -&gt; B).
+
+mode : [A] A -&gt; mode_spec A -&gt; prop.
+</code></pre>
+
+<p>Now we should be able to specify modes for our predicates:</p>
+
+<pre><code class="language-makam">type_check : expr -&gt; typ -&gt; prop.
+mode type_check [input, input].
+
+type_synth : expr -&gt; typ -&gt; prop.
+mode type_synth [input, output].
+</code></pre>
+
+<p>Now let&rsquo;s work on the actual clause transformation. A clause like the following:</p>
+
+<pre><code class="language-makam-noeval">type_check (lambda E) (arrow A1 A2) :-
+  (x:expr -&gt; type_of_var x A1 -&gt; type_check (E x) A2).
+</code></pre>
+
+<p>should be turned to:</p>
+
+<pre><code class="language-makam-noeval">type_check Arg1 Arg2 :-
+  pattern_match (lambda E) Arg1,
+  pattern_match (arrow A1 A2) Arg2,
+  (x:expr -&gt; type_of_var x A1 -&gt; type_check (E x) A2).
+</code></pre>
+
+<p>Desugaring, the above clauses correspond to the following Makam terms:</p>
+
+<pre><code class="language-makam-noeval">clause (type_check (lambda E) (arrow A1 A2))
+  (newvar (fun (x:expr) =&gt;
+    (assume (clause (type_of_var x A1) success)
+      (type_check (E x) A2))))
+</code></pre>
+
+<p>and after transformation:</p>
+
+<pre><code class="language-makam-noeval">clause (type_check Arg1 Arg2)
+  (and_many
+    [ pattern_match (lambda E) Arg1,
+      pattern_match (arrow A1 A2) Arg2,
+      newvar (fun (x:expr) =&gt;
+        (assume (clause (type_of_var x A1) success)
+          (type_check (E x) A2))) ])
+</code></pre>
+
+<p>Let&rsquo;s write a predicate to do that transformation:</p>
+
+<pre><code class="language-makam">generate_matches :
+  [A] mode_spec A -&gt;
+      args A prop -&gt; args A prop -&gt; list prop -&gt; prop.
+
+mode_transform : clause -&gt; clause -&gt; prop.
+mode_transform
+    (clause Goal Premise)
+    (clause Goal' (and_many MatchesAndPremise)) :-
+  refl.decompose_term Goal Predicate Patterns,
+  refl.recompose_term Predicate Args Goal',
+  mode Predicate ModeSpec,
+  generate_matches ModeSpec Patterns Args Matches,
+  append Matches [Premise] MatchesAndPremise.
+</code></pre>
+
+<p>OK, there&rsquo;s a lot going on in these few lines:</p>
+
+<ul>
+<li>We use <code>refl.decompose_term</code> to decompose a term into its head and arguments, turning <code>type_check (lambda E) (arrow A1 A2)</code> into
+<code>type_check</code> (the head, which in this case is the <code>Predicate</code>) and <code>[lambda E, arrow A1 A2]</code> (the arguments, which in this case are the <code>Patterns</code> we are interested in).</li>
+<li>We use <code>refl.recompose_term</code> to recompose a term from a head and arguments. Since <code>Args</code> is not concrete, this will generate turn it into a list of new unification variables, giving us a term like <code>type_check Arg1 Arg2</code>.</li>
+<li>We look up the mode specification of the <code>Predicate</code>.</li>
+<li>We use <code>generate_matches</code> to zip together the patterns and the new unification variables into the corresponding propositions, following the mode specification. This will give us a term like <code>pattern_match (lambda E) Arg1</code> for the first pattern and argument.</li>
+</ul>
+
+<p>The rules for <code>generate_matches</code> are as follows:</p>
+
+<pre><code class="language-makam">generate_matches [] [] [] [].
+generate_matches
+    (input :: Modes)
+    (Pattern :: Patterns)
+    (Arg :: Args)
+    ((pattern_match Pattern Arg) :: Rest) :-
+  generate_matches Modes Patterns Args Rest.
+generate_matches
+    (output :: Modes)
+    (Pattern :: Patterns)
+    (Arg :: Args)
+    ((unify Pattern Arg) :: Rest) :-
+  generate_matches Modes Patterns Args Rest.
+</code></pre>
+
+<p>Let&rsquo;s see what we did:</p>
+
+<pre><code class="language-makam">mode_transform
+  (clause (type_check (lambda E) (arrow A1 A2))
+    (newvar (fun x =&gt;
+      (assume (clause (type_of_var x A1) success)
+        (type_check (E x) A2)))))
+  Transformed ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes:
+&gt;&gt; Transformed :=
+     clause (type_check Arg1 Arg2)
+       (and_many
+         [ pattern_match (lambda E) Arg1,
+           pattern_match (arrow A1 A2) Arg2,
+           newvar (fun (x:expr) =&gt;
+             (assume (clause (type_of_var x A1) success)
+               (type_check (E x) A2))) ]).
+</code></pre>
+
+<p>If we squint away the poor naming of the new unification variables,
+the result looks OK! Does this work OK for output arguments too?</p>
+
+<pre><code class="language-makam">mode_transform
+  (clause (type_synth (annot E A) A)
+    (type_check E A))
+  Transformed ?
+</code></pre>
+
+<pre><code class="language-makam-hidden">&gt;&gt; Yes:
+&gt;&gt; Transformed := clause (type_synth Arg1 Arg2) (and_many [ (pattern_match (annot E A) Arg1), (unify A Arg2), (type_check E A) ]).
+</code></pre>
+
+<p>This introduces an extra unification variable that is not strictly needed, but the behavior should still be as expected.</p>
+
+<p>So the transformation based on modes seems to work OK. Now, there&rsquo;s two ways we can use this transformation to make use of modes for our predicates:</p>
+
+<ul>
+<li><a href="#statically">statically</a>: when defining a new rule for a predicate that includes a mode. We can do this using the staging support of Makam: instead of defining the rules directly, we&rsquo;ll call a predicate that generates a new rule, using the transformation we just defined.</li>
+<li><a href="#dynamically">dynamically</a>: we can perform the transformation whenever the rules are about to get used. We can do this using the reflection support of Makam: we&rsquo;ll define a wrapper that performs reflection to get all the rules of the predicates, do the transformation,</li>
+</ul>
+
+<h4 id="statically">statically</h4>
+
+<p>Let&rsquo;s see how those work. For the <em>static</em> version, we will need a predicate that takes the goal and the premise of a rule, and generates
+a <em>command</em>: one of the top-level definitions that make up a Makam
+program. Using our transformation predicate above, we&rsquo;ll turn the goal and the premise into the clause that takes the mode specification into account, and we will generate the command to define this as a new clause:</p>
+
+<pre><code class="language-makam">define_with_mode : prop -&gt; prop -&gt; cmd -&gt; prop.
+define_with_mode Goal Premise (cmd_newclause Clause') :-
+  mode_transform (clause Goal Premise) Clause'.
+</code></pre>
+
+<p>Now we have to change how we write our rules for <code>type_check</code> and <code>type_synth</code>. Here&rsquo;s an example:</p>
+
+<pre><code class="language-makam-hidden">%extend static.
+type_check : expr -&gt; typ -&gt; prop.
+mode type_check [input, input].
+
+type_synth : expr -&gt; typ -&gt; prop.
+mode type_synth [input, output].
+
+`(define_with_mode
+  (type_synth X A)
+  (type_of_var X A)).
+
+`(define_with_mode (type_check E B)
+  {prop| type_synth E A, unify A B |}).
+
+`(define_with_mode (type_synth (annot E A) A)
+  (type_check E A)).
+
+`(define_with_mode (type_check eunit tunit) success).
+</code></pre>
+
+<pre><code class="language-makam">`(define_with_mode (type_check (lambda E) (arrow A1 A2))
+  {prop| (x:expr -&gt; type_of_var x A1 -&gt; type_check (E x) A2) |}).
+</code></pre>
+
+<p>Having to write rules in this syntax is unfortunate and error-prone.
+We have to use <code>{prop|</code> to use propositional syntax for the premise, and we also have to remember to use <code>define_with_mode</code>; nothing
+is preventing us from writing the rules using the normal syntax, but
+the mode specification will not be taken into account if we do that.</p>
+
+<pre><code class="language-makam-hidden">`(define_with_mode (type_synth (app E1 E2) B)
+  {prop|
+    type_synth E1 (arrow A B),
+    type_check E1 A |}).
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow tunit tunit) ?
+&gt;&gt; Yes.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) T ?
+&gt;&gt; Impossible.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow tunit X) ?
+&gt;&gt; Yes:
+&gt;&gt; X := tunit.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow (arrow tunit tunit) X) ?
+&gt;&gt; Yes:
+&gt;&gt; X := arrow tunit tunit.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow tunit (arrow tunit tunit)) ?
+&gt;&gt; Impossible.
+
+%end.
+</code></pre>
+
+<h4 id="dynamically">dynamically</h4>
+
+<pre><code class="language-makam-hidden">%extend dynamic.
+</code></pre>
+
+<p>Let&rsquo;s see how the dynamic version works out. The main thing we&rsquo;ll do is to use reflection to get all the rules associated with a predicate and then write a small special interpreter for them: we&rsquo;ll first transform them using <code>mode_transform</code> and then mimic what Makam
+does normally for rules:</p>
+
+<pre><code class="language-makam-hidden">run_with_modes : prop -&gt; prop.
+run_clauses_with_modes : prop -&gt; list clause -&gt; prop.
+</code></pre>
+
+<pre><code class="language-makam">run_with_modes Goal :-
+  refl.rules_get Goal Clauses,
+  run_clauses_with_modes Goal Clauses.
+
+run_clauses_with_modes Goal (ActualRule :: Rest) :-
+  mode_transform ActualRule (clause Goal' Premise'),
+  ((unify Goal Goal', Premise')
+   ; run_clauses_with_modes Goal Rest).
+</code></pre>
+
+<p>The reflective predicate <code>refl.rules_get</code> is what gives us the rules associated with a proposition as a list of clauses. Then
+for each rule, <code>run_clauses_with_modes</code> transforms it, tries
+to unify our current goal with the transformed goal of the rule,
+and then runs the transformed premise. It also inserts a backtracking
+point to try the rest of the rules using the <code>or</code> connective, written
+as <code>;</code>.</p>
+
+<p>Now to use this for our typing rules, we still have to do some work:</p>
+
+<ul>
+<li>we have to move all of our &ldquo;real&rdquo; rules from <code>type_check</code> and <code>type_synth</code> into separate predicates <code>type_check_rules</code> and <code>type_synth_rules</code></li>
+<li>we have to change the <code>type_check</code> and <code>type_synth</code> predicates to be helper predicates that use <code>run_with_modes</code> with the &ldquo;real&rdquo; rules</li>
+</ul>
+
+<p>Here&rsquo;s the basic setup we&rsquo;ll need:</p>
+
+<pre><code class="language-makam">type_check_rules : expr -&gt; typ -&gt; prop.
+mode type_check_rules [input, input].
+
+type_synth_rules : expr -&gt; typ -&gt; prop.
+mode type_synth_rules [input, output].
+
+type_check : expr -&gt; typ -&gt; prop.
+type_check E T :-
+  run_with_modes (type_check_rules E T).
+
+type_synth : expr -&gt; typ -&gt; prop.
+type_synth E T :-
+  run_with_modes (type_synth_rules E T).
+</code></pre>
+
+<p>The good news is that in this case, we will be able to write the rules in a relatively normal way. I&rsquo;m giving the full rules here, which I copy-pasted from our naive transcription above, and just moved them to the <code>_rules</code> predicates:</p>
+
+<pre><code class="language-makam">type_synth_rules X A :-
+  type_of_var X A.
+
+type_check_rules E B :-
+  type_synth E A, unify A B.
+
+type_synth_rules (annot E A) A :-
+  type_check E A.
+
+type_check_rules eunit tunit.
+
+type_check_rules (lambda E) (arrow A1 A2) :-
+  (x:expr -&gt; type_of_var x A1 -&gt; type_check (E x) A2).
+
+type_synth_rules (app E1 E2) B :-
+  type_synth E1 (arrow A B),
+  type_check E1 A.
+</code></pre>
+
+<p>Of course, even in this solution there is a little bit of definition overhead: we have to remember to define the wrapper predicates, to
+make sure we add the &ldquo;real&rdquo; rules to the <code>_rules</code> predicates, and to
+call the wrapper predicates recursively in the premises rather than the <code>_rules</code> predicates. And there definitely is runtime overhead in this solution, as we perform the mode transformation every time that the predicates get used.</p>
+
+<pre><code class="language-makam-hidden">&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow tunit tunit) ?
+&gt;&gt; Yes.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) T ?
+&gt;&gt; Impossible.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow tunit X) ?
+&gt;&gt; Yes:
+&gt;&gt; X := tunit.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow (arrow tunit tunit) X) ?
+&gt;&gt; Yes:
+&gt;&gt; X := arrow tunit tunit.
+
+&gt;&gt; type_check (lambda (fun x =&gt; x)) (arrow tunit (arrow tunit tunit)) ?
+&gt;&gt; Impossible.
+</code></pre>
+
+<pre><code class="language-makam-hidden">%end.
+</code></pre>
+
+<h4 id="recap-and-future">recap and future</h4>
+
+<p>We have found a couple of ways to take mode specifications into account without having to change the core of Makam. Unfortunately, none of these two solutions are ideal:</p>
+
+<ul>
+<li>doing the mode transformation statically is nice because there&rsquo;s no runtime overhead every time we call the rules. However, we have to remember to use <code>define_with_mode</code> for predicates that include a mode specification, and we have to give up on writing rules for our predicates natively. Additionally, it is hard to inspect the output of staging and understand what rules actually constitute the program.</li>
+<li>doing the transformation dynamically is nice because we can write the rules in the standard way. However, there is a significant runtime overhead, and debugging predicates written in this style becomes much harder.</li>
+</ul>
+
+<p>So it turns out that we might need some additional support in the core
+of Makam for mode declarations to be nice. One idea there is that we
+could add a way to register &ldquo;rule transformer&rdquo; predicates that run
+whenever we add a new rule. This would be similar to the staging
+approach, but would have better ergonomics: we could register the mode transformation once, proceed to write all the rules
+in the normal style, and the staged transformation would happen behind
+the scenes. Still, there&rsquo;s a few design questions for this feature:</p>
+
+<ul>
+<li>should we run transformers retroactively for existing rules?</li>
+<li>how would multiple transformers work out?</li>
+<li>could we have a nice way in an IDE to switch between the pre-transformation rules and the post-transformation rules?</li>
+</ul>
+
+<p>Still, one good thing that we found is that the mode specification part itself looks quite nice and does not need to be part of the core language. Are these kinds of mode specifications general enough though?</p>
+
+<pre><code class="language-makam-hidden">%end.
+</code></pre>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:1">In Makam unfortunately the usefulness of this feature is limited for programming language settings, due to the naive depth-first search procedure used. For great examples of this in a PL context, look at <a href="http://io.livecode.ch/learn/gregr/icfp2017-artifact-auas7pp">A Unified Approach to Solving Seven Programming Problems</a> by William Byrd et al.
+ <a class="footnote-return" href="#fnref:1"><sup>[return]</sup></a></li>
+</ol>
+</div>
+            </div>
+        </div>
+	</div>
+    <div class="pure-u-1-24 pure-u-md-1-4"></div>
+</div>
+
+
+<div class="footer pure-g">
+    <div class="pure-u-1-24 pure-u-md-5-24"></div>
+    <div class="pure-u-11-12 pure-u-md-5-8">
+        <div class="pure-menu pure-menu-horizontal footer-content">
+
+            <a href="#" class="pure-menu-heading pull-right" id="gototop-btn">↑ TOP</a>
+        </div>
+	  </div>
+      <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+<script src="https://astampoulis.github.io/js/jquery.min.js" type="text/javascript"></script>
+<script src="https://astampoulis.github.io/js/jquery.timeago.js" type="text/javascript"></script>
+
+
+
+
+<script type="text/javascript">
+  $(function(){
+    $("time.timeago").timeago();
+  })
+  $("#toggle-btn").click(function(){
+    $("#toggle-content").toggle();
+    if($(this).html() === "☰") {
+        $(this).html("X")
+    } else {
+        $(this).html("☰")
+    }
+  });
+  $(window).resize(function(){
+    if(window.innerWidth > 768) {
+      $(".desktop").removeAttr("style");
+    }
+  });
+</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1328981-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-1328981-1');
+</script>
+</div>
+</body>
+</html>
+
