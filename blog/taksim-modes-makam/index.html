@@ -189,15 +189,15 @@ type_check : expr -&gt; typ -&gt; prop.
 mode type_check (input input).
 </code></pre>
 
-<p>Makam does not support mode declarations though. This brings us to the main thing we&rsquo;ll explore in this post: can we add support for them, without changing the core language?</p>
+<p>Makam does not support mode declarations though. This brings us to the main thing we&rsquo;ll explore in this post: can we add some support for them, without changing the core language?</p>
 
 <p>Here&rsquo;s the structure of the rest of this.</p>
 
 <ul>
 <li>What happens if we transcribe the bidirectional system for the STLC directly? <a href="#example-naively">→ example, naively</a></li>
 <li>How can we model bidirectional typing accurately? <a href="#example-manually">→ example, manually</a></li>
-<li>It would be nice to be able to fix this just by adding a mode declaration for <code>type_synth</code> and <code>type_check</code>. Can we add mode declarations to Makam? Is there a way to do this without changing the core language? <a href="#modal-makam">→ modal makam</a></li>
-<li>Do simple mode declarations provide enough generality? (TODO) <a href="#todo">→ modal makam, take 2</a></li>
+<li>It would be nice to be able to fix this just by adding a mode declaration for <code>type_synth</code> and <code>type_check</code>. Can we add mode declarations to Makam? Is there a way to do this without changing the core language? <a href="#modes-in-makam">→ modes in makam</a></li>
+<li>Do simple mode declarations provide enough generality? (TODO) <a href="#todo">→ modes in makam, take 2</a></li>
 <li>Can we turn the bidirectional recipe into a Makam program, to &ldquo;bidirectionalize&rdquo; an existing typing declaration? (TODO) <a href="#todo">→ writing recipes in makam</a></li>
 </ul>
 
@@ -373,10 +373,14 @@ type_check (lambda (fun x =&gt; x)) (arrow tunit (arrow tunit tunit)) ?
 <pre><code class="language-makam-hidden">%end.
 </code></pre>
 
-<p>So the recipe for enforcing a proper mode is pretty simple: for input arguments, we should use pattern matching rather than unification.
-Is there some way that we can extend Makam to support this recipe?</p>
+<h2 id="modes-in-makam">modes in makam</h2>
 
-<h2 id="modal-makam">modal makam</h2>
+<p>So the recipe for properly enforcing a mode is pretty simple: for
+input arguments, we should use pattern matching rather than
+unification.  Is there some way that we can extend Makam to support
+this recipe?</p>
+
+<p>Note that this will be patently different than the mode support in other logic programming languages (such as Twelf and Mercury). We will not be doing mode <em>checking</em>, that is, a static check that a certain predicate behaves according to the specified mode. Instead, we will be <em>enforcing</em> a mode, at a per-predicate level, by <em>making</em> predicates behave according to their mode. This is similar to the mode support in <a href="https://github.com/LPCIC/elpi/">ELPI</a>, for example.</p>
 
 <pre><code class="language-makam-hidden">(* stdlib extensions required for this. will open a PR for Makam soon *)
 
@@ -397,9 +401,11 @@ recompose_term Head Args Term :-
 <pre><code class="language-makam-hidden">%extend modes_v1.
 </code></pre>
 
-<p>Here&rsquo;s a first approach: we can do some meta-programming in Makam, transforming predicates that utilize a specific mode according to the recipe. We will have to perform that transformation for all rules of the relevant predicates.</p>
+<p>Here&rsquo;s the basic approach we&rsquo;ll follow: we can do some meta-programming in Makam, transforming predicates that utilize a specific mode according to the recipe. We will have to perform that transformation for all rules of the relevant predicates.</p>
 
-<p>Let&rsquo;s see how this would work. First of all, we can define <code>mode</code> as a predicate, that will be used to specify the mode for predicates. We&rsquo;ll make light use of GADTs to make sure that when specifying a mode, the number of arguments we specify matches the number of arguments of the predicate.</p>
+<p>Let&rsquo;s see how this would work. First of all, we can define <code>mode</code> as a predicate, that will be used to specify the mode for predicates. This <code>mode</code> predicate will only serve as a way to record information for predicates that we define; it will not itself have any built-in rules that contain any sort of logic. The transformation logic will be elsewhere, and will just make use of the mode information that the <code>mode</code> predicate records.</p>
+
+<p>We can make light use of GADTs to make sure that when specifying a mode, the number of arguments we specify matches the number of arguments of the predicate.</p>
 
 <pre><code class="language-makam">argument_mode : type.
 input, output : argument_mode.
@@ -420,7 +426,7 @@ type_synth : expr -&gt; typ -&gt; prop.
 mode type_synth [input, output].
 </code></pre>
 
-<p>Now let&rsquo;s work on the actual clause transformation. A clause like the following:</p>
+<p>Now let&rsquo;s work on the logic of the actual clause transformation. A clause like the following:</p>
 
 <pre><code class="language-makam-noeval">type_check (lambda E) (arrow A1 A2) :-
   (x:expr -&gt; type_of_var x A1 -&gt; type_check (E x) A2).
@@ -476,7 +482,7 @@ mode_transform
 <li>We use <code>refl.decompose_term</code> to decompose a term into its head and arguments, turning <code>type_check (lambda E) (arrow A1 A2)</code> into
 <code>type_check</code> (the head, which in this case is the <code>Predicate</code>) and <code>[lambda E, arrow A1 A2]</code> (the arguments, which in this case are the <code>Patterns</code> we are interested in).</li>
 <li>We use <code>refl.recompose_term</code> to recompose a term from a head and arguments. Since <code>Args</code> is not concrete, this will generate turn it into a list of new unification variables, giving us a term like <code>type_check Arg1 Arg2</code>.</li>
-<li>We look up the mode specification of the <code>Predicate</code>.</li>
+<li>We use the <code>mode</code> predicate to <em>look up</em> the mode specification of the <code>Predicate</code>.</li>
 <li>We use <code>generate_matches</code> to zip together the patterns and the new unification variables into the corresponding propositions, following the mode specification. This will give us a term like <code>pattern_match (lambda E) Arg1</code> for the first pattern and argument.</li>
 </ul>
 
@@ -533,11 +539,11 @@ the result looks OK! Does this work OK for output arguments too?</p>
 
 <p>This introduces an extra unification variable that is not strictly needed, but the behavior should still be as expected.</p>
 
-<p>So the transformation based on modes seems to work OK. Now, there&rsquo;s two ways we can use this transformation to make use of modes for our predicates:</p>
+<p>So the transformation based on modes seems to work OK. Now, there&rsquo;s two ways we can use this transformation to make use of the mode specifications for our predicates:</p>
 
 <ul>
-<li><a href="#statically">statically</a>: when defining a new rule for a predicate that includes a mode. We can do this using the staging support of Makam: instead of defining the rules directly, we&rsquo;ll call a predicate that generates a new rule, using the transformation we just defined.</li>
-<li><a href="#dynamically">dynamically</a>: we can perform the transformation whenever the rules are about to get used. We can do this using the reflection support of Makam: we&rsquo;ll define a wrapper that performs reflection to get all the rules of the predicates, do the transformation,</li>
+<li><a href="#statically">statically</a>: that is, do the transformation when defining a new rule for a predicate that includes a mode. We can do this using the staging support of Makam: instead of defining the rules directly, we&rsquo;ll call a predicate that generates a new rule, using the transformation we just defined.</li>
+<li><a href="#dynamically">dynamically</a>: that is, we can perform the transformation whenever the rules are about to get used. We can do this using the reflection support of Makam: we&rsquo;ll define a wrapper that performs reflection to get all the rules of the predicates, do the transformation, and then execute/interpret the transformed rules.</li>
 </ul>
 
 <h4 id="statically">statically</h4>
@@ -615,11 +621,10 @@ the mode specification will not be taken into account if we do that.</p>
 <p>Let&rsquo;s see how the dynamic version works out. The main thing we&rsquo;ll do is to use reflection to get all the rules associated with a predicate and then write a small special interpreter for them: we&rsquo;ll first transform them using <code>mode_transform</code> and then mimic what Makam
 does normally for rules:</p>
 
-<pre><code class="language-makam-hidden">run_with_modes : prop -&gt; prop.
+<pre><code class="language-makam">run_with_modes : prop -&gt; prop.
 run_clauses_with_modes : prop -&gt; list clause -&gt; prop.
-</code></pre>
 
-<pre><code class="language-makam">run_with_modes Goal :-
+run_with_modes Goal :-
   refl.rules_get Goal Clauses,
   run_clauses_with_modes Goal Clauses.
 
