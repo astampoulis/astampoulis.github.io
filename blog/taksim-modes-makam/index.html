@@ -118,10 +118,6 @@
 
 <p></p>
 
-<h2 id="todo">todo</h2>
-
-<p>This post is WIP. To keep track of updates, follow this <a href="https://github.com/astampoulis/website-source/pull/2">PR</a>.</p>
-
 <h2 id="intro">intro</h2>
 
 <p>Recommended soundtrack: <a href="https://open.spotify.com/album/1Agh6GiahtO2bt4t5zLJR2">Kalthoum (Alf Leila Wa Leila), by Ibrahim Maalouf</a></p>
@@ -283,7 +279,7 @@ given an unknown type like <code>T</code> as input, we should not unify it with 
 <code>arrow A1 A2</code> term; instead, we should check that <code>T</code> <em>already</em>
 looks like <code>arrow A1 A2</code>. So we should perform <em>pattern matching</em>
 rather than <em>unification</em> with <code>arrow A1 A2</code>. Fortunately,
-Makam provides us with a <code>pattern_match</code> implementation that behaves
+Makam provides us with a <a href="https://github.com/astampoulis/makam/blob/a2815a711b0257774308cd2bae21f22ee41c3030/stdlib/reify.makam#L173-L193"><code>pattern_match</code> implementation</a> that behaves
 as expected:</p>
 
 <pre><code class="language-makam">unify (arrow A1 A2) T ?
@@ -392,7 +388,7 @@ decompose_term Term Head Args :-
   dyn.to_args ArgsDyn Args.
 
 recompose_term : [Full Head] Head -&gt; args Head Full -&gt; Full -&gt; prop.
-recompose_term Head Args Term :-
+recompose_term Head Args Term when not(refl.isunif Head) :-
   args.applyfull Head Args Term.
 
 %end.
@@ -711,7 +707,7 @@ call the wrapper predicates recursively in the premises rather than the <code>_r
 <pre><code class="language-makam-hidden">%end.
 </code></pre>
 
-<h4 id="recap-and-future">recap and future</h4>
+<h2 id="recap-and-future">recap and future</h2>
 
 <p>We have found a couple of ways to take mode specifications into account without having to change the core of Makam. Unfortunately, none of these two solutions are ideal:</p>
 
@@ -734,7 +730,11 @@ the scenes. Still, there&rsquo;s a few design questions for this feature:</p>
 <li>could we have a nice way in an IDE to switch between the pre-transformation rules and the post-transformation rules?</li>
 </ul>
 
-<p>Still, one good thing that we found is that the mode specification part itself looks quite nice and does not need to be part of the core language. Are these kinds of mode specifications general enough though?</p>
+<p>Still, one good thing that we found is that the mode specification part itself looks quite nice and does not need to be part of the core language. Are these kinds of mode specifications general enough though? In the next part, we will explore a generalization of the mode specifications that can cover more situations, such as higher-order predicates and predicates with mixed argument modes. We will also see if we can use the metaprogramming support of Makam to turn the <em>bidirectional recipe itself</em> into a predicate.</p>
+
+<h2 id="todo">todo</h2>
+
+<p>The next part is not done yet! You can watch the <a href="https://github.com/astampoulis/website-source">source repository</a> of this blog for updates.</p>
 
 <pre><code class="language-makam-hidden">%end.
 </code></pre>
