@@ -8,8 +8,706 @@
     <language>en-us</language>
     <managingEditor>antonis DOT stampoulis AT gmail DOT com (Antonis Stampoulis)</managingEditor>
     <webMaster>antonis DOT stampoulis AT gmail DOT com (Antonis Stampoulis)</webMaster>
-    <lastBuildDate>Fri, 01 May 2020 17:30:00 -0400</lastBuildDate>
+    <lastBuildDate>Sun, 21 Feb 2021 17:30:00 -0400</lastBuildDate>
     <atom:link href="/" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>A language design taksim on mode declarations for Makam, part 2</title>
+      <link>https://astampoulis.github.io/blog/taksim-modes-makam-2/</link>
+      <pubDate>Sun, 21 Feb 2021 17:30:00 -0400</pubDate>
+      <author>antonis DOT stampoulis AT gmail DOT com (Antonis Stampoulis)</author>
+      <guid>https://astampoulis.github.io/blog/taksim-modes-makam-2/</guid>
+      <description>&lt;p&gt;In this post, we will continue to explore how to integrate mode declarations into Makam, using bidirectional typing as an example.&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;intro&#34;&gt;intro&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;tests : testsuite. %testsuite tests.
+%use &amp;quot;taksim-modes-makam.md&amp;quot;.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the &lt;a href=&#34;https://astampoulis.github.io/blog/taksim-modes-makam/&#34;&gt;previous part&lt;/a&gt;, we found a basic recipe for adding mode declarations to Makam:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Through a &lt;code&gt;mode&lt;/code&gt; predicate, we can declare the mode of each argument of a predicate.
+For example, in a bidirectional type system, type checking and type synthesis would need the declarations:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-noeval&#34;&gt;type_check : expr -&amp;gt; typ -&amp;gt; prop.
+mode type_check [input, input].
+
+type_synth : expr -&amp;gt; typ -&amp;gt; prop.
+mode type_synth [input, output].
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Based on these declarations, we can transform each rule of our predicates, performing pattern
+matching for input arguments, and full unification for output arguments. This way,
+our predicates will look at input arguments as fixed data, and avoid unifying any
+uninstantiated unification variables that they contain with the terms specified in
+the rules. The &amp;ldquo;generative&amp;rdquo; property of logic programming is thus avoided for input
+arguments.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We did this transformation in two ways: statically, through the use of staging, to
+transform the rules within Makam before they are added to the set of rules; and
+dynamically, through the use of reflection, to transform the rules at the time of use.&lt;/p&gt;
+
+&lt;p&gt;Both of these approaches had issues. Since the last post, I have
+merged a new feature into Makam, which gives us another approach with
+much better ergonomics: toplevel command transformers. It will also
+allow us to treat mode declarations in an entirely different way: as
+information used in a static analysis, rather than information used to
+guide a source-to-source transformation.&lt;/p&gt;
+
+&lt;h2 id=&#34;mode-declarations-through-command-transformers&#34;&gt;mode declarations through command transformers&lt;/h2&gt;
+
+&lt;p&gt;Toplevel command transformers is an experimental new feature in Makam, that gives
+an alternative way to utilize the staging support of the language. The core idea is that
+every toplevel command, such as the declaration of a new rule or a query, is first transformed through a Makam predicate before being issued as a command. This way we can apply
+transformations, such as the mode transformation we&amp;rsquo;ll be doing here; or transformations to implement other new features such as macro expansion and functional syntax.&lt;/p&gt;
+
+&lt;p&gt;Through this feature, we can resolve the main issue we faced when transforming our rules through staging: we had to manually use the &lt;code&gt;mode_transform&lt;/code&gt; predicate to transform each rule, which introduced noise to our declarations and hurt readability. What we can do now instead is register &lt;code&gt;mode_transform&lt;/code&gt; to be used automatically, whenever a rule for a predicate with a mode declaration gets added.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s see how this works. First, the command transformer feature is opt-in right now, so we&amp;rsquo;ll have to import the relevant library that enables it:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam&#34;&gt;%use &amp;quot;stdlib/transformers/init&amp;quot;.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(As always, you can run the code in this post in your browser, through the
+Makam Web UI. Click on the play button on the bottom-right corner, or press Ctrl+Enter!)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;log_annotation : A -&amp;gt; expansion -&amp;gt; prop.
+
+log_annotation Where Log :-
+  log_info_do Where &amp;quot;Query result&amp;quot; Log.
+
+%extend modes_enforcing.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The second step is to register a new toplevel transformer to do
+the mode transformation. This is what this looks like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-noeval&#34;&gt;toplevel_command_transformer &amp;quot;mode&amp;quot;
+  (cmd_newclause Clause)
+  (cmd_newclause Clause&#39;)
+    when mode_transform Clause Clause&#39;.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So what this says is that we transform new clause commands
+(&lt;code&gt;cmd_newclause Clause&lt;/code&gt;, the command to add a new clause as a rule
+to a predicate) into the clause commands that actually
+get issued to Makam (&lt;code&gt;cmd_newclause Clause&#39;&lt;/code&gt;); we do this
+only when the &lt;code&gt;mode_transform&lt;/code&gt; predicate that we implemented in &lt;a href=&#34;https://astampoulis.github.io/blog/taksim-modes-makam/#modes-in-makam&#34;&gt;part 1&lt;/a&gt; is
+successful. As &lt;code&gt;mode_transform&lt;/code&gt; will fail for predicates that
+do not include mode declarations (e.g. any predicate other than &lt;code&gt;type_synth&lt;/code&gt; or &lt;code&gt;type_check&lt;/code&gt;),
+their rules will be preserved as they are.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;when&lt;/code&gt; part of the rule might be surprising: it is a &lt;em&gt;guard&lt;/em&gt;
+rather than a &lt;em&gt;premise&lt;/em&gt;. Similar to guards in pattern matching,
+this part of the rule controls whether the rule &lt;em&gt;applies&lt;/em&gt; or not.
+For most situations in Makam, it is equivalent to move a guard to be part of a
+premise (so, a rule like &lt;code&gt;Goal when Guard :- Premise&lt;/code&gt; can equivalently
+be written as &lt;code&gt;Goal :- Guard, Premise&lt;/code&gt;). However, in some cases it is useful to distinguish between
+when a rule does not apply (the &lt;code&gt;Goal&lt;/code&gt; does not match the current goal, or the &lt;code&gt;Guard&lt;/code&gt;
+fails), and when a rule applies but fails to produce a result. One such example is common when writing structurally
+recursive predicates. In this case, we want the transformation to
+only apply when a mode declaration exists, so the use of &lt;code&gt;when&lt;/code&gt;
+allows the transformer library to tell that this transformation needs
+to be applied. An alternative would be to make the rule apply always,
+change the &lt;code&gt;mode_transform&lt;/code&gt; predicate to produce a result when no mode declaration exists, and make
+&lt;code&gt;mode_transform&lt;/code&gt; a premise.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;(* In reality, make the command transformer also show what the
+   resulting transformed clause is like. *)
+
+toplevel_command_transformer &amp;quot;mode&amp;quot;
+  (cmd_newclause Clause)
+  (cmd_newclause Clause&#39;)
+    when mode_transform Clause Clause&#39; :-
+  tostring Clause&#39; S,
+  log_annotation Clause `${S}`.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;With the transformer registered, we should now be able to do a direct transcription
+of the typing rules and get the expected behavior. Here are the rules again from last time:&lt;/p&gt;
+
+&lt;p&gt;&lt;center&gt;&lt;img src=&#34;https://astampoulis.github.io/blog/taksim-modes-bidir-spec.svg&#34; alt=&#34;Bidirectional typing&#34; width=&#34;500&#34; /&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;type_check, type_synth : expr -&amp;gt; typ -&amp;gt; prop.
+mode type_check [input, input].
+mode type_synth [input, output].
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And here is how we transcribe them into Makam.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam&#34;&gt;type_synth X A :-
+  type_of_var X A.
+
+type_check E B :-
+  type_synth E A, unify A B.
+
+type_synth (annot E A) A :-
+  type_check E A.
+
+type_check eunit tunit.
+
+type_check (lambda E) (arrow A1 A2) :-
+  (x:expr -&amp;gt; type_of_var x A1 -&amp;gt; type_check (E x) A2).
+
+type_synth (app E1 E2) B :-
+  type_synth E1 (arrow A B),
+  type_check E1 A.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here, I have tweaked the command transformer to show what clause
+actually gets added to Makam, to inspect the result of mode transformation. If you run the Makam code in your browser, the transformed clause will be presented below each rule.&lt;/p&gt;
+
+&lt;p&gt;These rules now have the expected behavior:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam&#34;&gt;type_check (lambda (fun x =&amp;gt; x)) (arrow tunit tunit) ?
+type_check (lambda (fun x =&amp;gt; x)) T ?
+type_check (lambda (fun x =&amp;gt; x)) (arrow tunit T) ?
+type_check (lambda (fun x =&amp;gt; x)) (arrow tunit (arrow tunit tunit)) ?
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;&amp;gt;&amp;gt; type_check (lambda (fun x =&amp;gt; x)) (arrow tunit tunit) ?
+&amp;gt;&amp;gt; Yes.
+
+&amp;gt;&amp;gt; type_check (lambda (fun x =&amp;gt; x)) T ?
+&amp;gt;&amp;gt; Impossible.
+
+&amp;gt;&amp;gt; type_check (lambda (fun x =&amp;gt; x)) (arrow tunit X) ?
+&amp;gt;&amp;gt; Yes:
+&amp;gt;&amp;gt; X := tunit.
+
+&amp;gt;&amp;gt; type_check (lambda (fun x =&amp;gt; x)) (arrow (arrow tunit tunit) X) ?
+&amp;gt;&amp;gt; Yes:
+&amp;gt;&amp;gt; X := arrow tunit tunit.
+
+&amp;gt;&amp;gt; type_check (lambda (fun x =&amp;gt; x)) (arrow tunit (arrow tunit tunit)) ?
+&amp;gt;&amp;gt; Impossible.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;%end.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So in summary, all pieces of mode declarations can now be implemented as a library in Makam:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;the mode declaration itself can be declared as rules for a predicate, rather than a new built-in directive&lt;/li&gt;
+&lt;li&gt;through the use of GADTs, we can make sure that the mode declaration includes as many arguments as each predicate defines&lt;/li&gt;
+&lt;li&gt;we can write normal predicates that transform clauses as needed, to conform to the declared mode, thanks to the fact that Makam clauses can be viewed as normal Makam terms. This does not require some other meta-language &amp;ndash; in a sense, Makam is its own metalanguage.&lt;/li&gt;
+&lt;li&gt;through the new feature of command transformers, we can apply these transformations automatically, whenever needed&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;One benefit of implementing mode declarations as a library is that we can further experiment with generalizations that our simple input and output modes do not cover right now. One example is a &amp;ldquo;mixed&amp;rdquo; mode for arguments that include both input and output parts &amp;ndash; proceeding by pattern matching for the input parts, and switching to full unification for the parts of the terms marked as output. Details about this are beyond the scope of this post, but if you are interested, you can find more details and an example in the &lt;a href=&#34;https://astampoulis.github.io/blog/taksim-modes-makam-2.md&#34;&gt;source code of this post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;%extend modes_enforcing.
+%extend modes_mixed.
+
+(* Mixed-mode pattern matching:
+
+   mixed_match P E
+     does normal pattern matching of E against pattern P,
+     switching to unification for any parts of the pattern
+     P that are annotated with `out`.
+*)
+
+out : A -&amp;gt; A.
+
+mixed_match : [A]A -&amp;gt; A -&amp;gt; prop.
+
+mixed_match_aux : [A]reified A -&amp;gt; reified A -&amp;gt; prop.
+
+mixed_match A B :- once(reify A AR), once(reify B BR), mixed_match_aux AR BR.
+
+mixed_match_aux (reified.term out [L])
+                R :-
+  reflect L L&#39;, reflect R R&#39;, unify L&#39; R&#39;.
+
+mixed_match_aux (reified.unifvar _ _ _ L)
+                R :-
+  reflect R R&#39;, eq L R&#39;.
+
+mixed_match_aux (reified.term Head Args) (reified.term Head Args&#39;) when not(dyn.eq Head out) :-
+  reified_args.map @mixed_match_aux Args Args&#39;.
+
+mixed_match_aux (reified.bvar Head Args) (reified.bvar Head Args&#39;) :-
+  reified_args.map @mixed_match_aux Args Args&#39;.
+
+mixed_match_aux (reified.nvar Head Args) (reified.nvar Head Args&#39;) :-
+  reified_args.map @mixed_match_aux Args Args&#39;.
+
+mixed_match_aux (reified.const Const) (reified.const Const).
+
+mixed_match_aux (reified.lambda F) (reified.lambda F&#39;) :-
+  (x:A -&amp;gt; mixed_match_aux (F x) (F&#39; x)).
+
+mixed : argument_mode.
+generate_matches
+    (mixed :: Modes)
+    (Pattern :: Patterns)
+    (Arg :: Args)
+    ((mixed_match Pattern Arg) :: Rest) :-
+  generate_matches Modes Patterns Args Rest.
+
+&amp;gt;&amp;gt; mixed_match (app E1 eunit) (app E1&#39; E2&#39;) ?
+&amp;gt;&amp;gt; Impossible.
+
+&amp;gt;&amp;gt; mixed_match (app E1 (out eunit)) (app E1&#39; E2&#39;) ?
+&amp;gt;&amp;gt; Yes:
+&amp;gt;&amp;gt; E1&#39; := E1,
+&amp;gt;&amp;gt; E2&#39; := eunit.
+
+(* Example:
+   (non-bidirectional) type-inferencing where all subterms
+   are annotated with their type. The type of each subterm
+   starts out as unknown, but after successfull type-checking,
+   will match the type discovered for the subterm.
+
+   The main rules for type-inferencing work on subterms
+   annotated with their type, `annot E T`. These require using
+   the mixed mode: the part `E` should be an input, while the
+   part `T` is an output.
+
+*)
+
+(* First, a predicate that decorates all `expr` subterms `E` within
+   a term, turning them into a `annot E T` term with an unknown
+   type `T`. *)
+
+annotate_with_types : [A] A -&amp;gt; A -&amp;gt; prop.
+
+annotate_with_types E E&#39; :-
+  if (dyn.eq E (annot E0 T))
+  then (refl.decompose_term E0 Head Args,
+        structural @annotate_with_types Args Args&#39;,
+        refl.recompose_term Head Args&#39; E1,
+        dyn.eq E&#39; (annot E1 T))
+  else if (dyn.eq E (E0: expr))
+  then (structural @annotate_with_types E0 E1,
+        dyn.eq E&#39; (annot E1 T1))
+  else (structural @annotate_with_types E E&#39;).
+
+&amp;gt;&amp;gt; annotate_with_types (lambda (fun x =&amp;gt; app x eunit)) E ?
+&amp;gt;&amp;gt; Yes:
+&amp;gt;&amp;gt; E := annot
+          (lambda (fun x =&amp;gt;
+            annot
+              (app
+                (annot x (T_x x))
+                (annot eunit (T_eunit x)))
+               (T_app x)))
+            T_lambda.
+
+
+type_infer : expr -&amp;gt; prop.
+mode type_infer [mixed].
+
+type_infer_aux : expr -&amp;gt; typ -&amp;gt; prop.
+mode type_infer_aux [input, output].
+
+type_infer (annot (app E1 E2) (out T2)) :-
+  type_infer_aux E1 (arrow T1 T2),
+  type_infer_aux E2 T1.
+
+type_infer (annot (lambda E) (out (arrow T1 T2))) :-
+  (x:expr -&amp;gt; type_of_var x T1 -&amp;gt; type_infer_aux (E x) T2).
+
+type_infer (annot X T) :-
+  type_of_var X T.
+
+type_infer (annot eunit (out tunit)).
+
+type_infer_aux (annot E T) T :-
+  type_infer (annot E T).
+
+
+do_type_infer : expr -&amp;gt; expr -&amp;gt; prop.
+
+do_type_infer E E&#39; :-
+  annotate_with_types E E&#39;,
+  type_infer E&#39;.
+
+&amp;gt;&amp;gt; do_type_infer (lambda (fun x =&amp;gt; annot (app x eunit) tunit)) X ?
+&amp;gt;&amp;gt; Yes:
+&amp;gt;&amp;gt; X := annot (lambda (fun x =&amp;gt; annot (app (annot x (arrow tunit tunit)) (annot eunit tunit)) tunit)) (arrow (arrow tunit tunit) tunit).
+
+%end.
+%end.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;mode-checking&#34;&gt;mode checking&lt;/h2&gt;
+
+&lt;p&gt;So far in these two posts, we have treated mode declarations as a &amp;ldquo;runtime&amp;rdquo;
+concern &amp;ndash; namely, mode declarations transform our predicates in order
+to enforce a specific mode when they get executed, by using pattern matching instead
+of unification, etc. This follows the approach of λProlog dialects like
+&lt;a href=&#34;https://github.com/LPCIC/elpi/&#34;&gt;ELPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;However, it is more common
+in logic programming languages to treat mode declarations similarly
+to type declarations &amp;ndash; that is, as an additional piece of
+information that guide a &amp;ldquo;static&amp;rdquo; check of our logic programs, issuing errors at the point where a mode violation might occur in our program text. This way,
+if a rule of a predicate like &lt;code&gt;type_synth&lt;/code&gt; fails to conform to its
+mode declaration, we would get an error at the point where the rule is
+declared, rather than at any point where the rule could be executed.
+Similarly, if we issue a query that does not conform to the declared
+modes, we would get an error at that point as well. This approach is
+the one taken for example in &lt;a href=&#34;https://www.cs.cmu.edu/~twelf/guide-1-2/twelf_6.html&#34;&gt;Twelf&lt;/a&gt;, &lt;a href=&#34;https://www.mercurylang.org/information/doc-latest/mercury_ref/Predicate-and-function-mode-declarations.html#Predicate-and-function-mode-declarations&#34;&gt;Mercury&lt;/a&gt;, and others.&lt;/p&gt;
+
+&lt;p&gt;Could it be possible to implement this approach to mode declarations
+within Makam itself, without changing the core language? Thanks to
+toplevel command transformers, it turns out that yes, that&amp;rsquo;s indeed
+possible! We can use command transformers as a hook that allows us
+to execute an analysis for every new rule or query. We do not need
+to transform the rules and queries per se, but we can issue any
+errors that we detect as needed. So the combination of a
+staging (made &amp;ldquo;transparent&amp;rdquo; through command transformers),
+together with the reflective features of Makam
+will allow us to &lt;em&gt;implement a new static analysis for Makam within
+Makam itself&lt;/em&gt;. This has parallels to how Racket, for example,
+can be used to implement &lt;a href=&#34;https://www2.ccs.neu.edu/racket/pubs/popl08-thf.pdf&#34;&gt;Typed Racket&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The bulk of the work of implementing mode checking is of course
+implementing the static analysis itself. We will implement a rudimentary
+version of the &lt;a href=&#34;https://www.cs.cmu.edu/~twelf/guide-1-2/twelf_6.html#SEC31&#34;&gt;Twelf mode checking algorithm&lt;/a&gt;. This will cover enough
+of Makam for the analysis to be meaningful for our running example
+of bidirectional type checking.&lt;/p&gt;
+
+&lt;p&gt;The gist of the algorithm is this:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;looking first at the goal of each rule, we mark all unification variables within input arguments as ground&lt;/li&gt;
+&lt;li&gt;we then visit the premises of the rule, making sure that unification variables within input arguments are ground, and marking any variables within output arguments as ground&lt;/li&gt;
+&lt;li&gt;last, going back to the goal of the rule, we make sure that unification variables within the output arguments are ground&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;During this algorithm, any unification variables that should be ground but are not should be reported to the user as a mode violation.&lt;/p&gt;
+
+&lt;p&gt;The implementation of this analysis in Makam is relatively straightforward. It follows the above description closely and takes about 150 lines of code together with comments and tests. The main entry point for the analysis are two &lt;code&gt;mode_check&lt;/code&gt; predicates for checking clauses and other predicates. These make use of a helper predicate that marks unification variables within an input or output term as ground, or checks that unification variables are ground already. For the full details of the implementation please refer to the &lt;a href=&#34;https://astampoulis.github.io/blog/taksim-modes-makam-2.md&#34;&gt;source code of this post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;%extend modes_checking.
+
+argument_mode : type.
+input, output : argument_mode.
+
+mode_spec : type -&amp;gt; type.
+nil : mode_spec prop.
+cons : argument_mode -&amp;gt; mode_spec B -&amp;gt; mode_spec (A -&amp;gt; B).
+
+mode : [A] A -&amp;gt; mode_spec A -&amp;gt; prop.
+
+mode_declared : [B] prop -&amp;gt; mode_spec B -&amp;gt; prop.
+
+mode_declared Goal Mode :-
+  refl.decompose_term Goal Pred _,
+  mode Pred Mode.
+
+test_predicate : expr -&amp;gt; typ -&amp;gt; prop.
+mode test_predicate [input, output].
+
+&amp;gt;&amp;gt; mode_declared (test_predicate E T) X ?
+&amp;gt;&amp;gt; Yes:
+&amp;gt;&amp;gt; X := [input, output].
+
+
+
+mode_info : type.
+ground : mode_info.
+
+visit_type : type.
+check, mark: visit_type.
+
+
+(* The main operation of the mode checking algorithm is the
+    `mode_visit_predicate`:
+
+   This is used to visit all unification variables in a predicate,
+   which exist within an argument marked as an input or output
+   argument (controlled by the `argument_mode` flag).
+
+   Every unification variable is either marked as ground,
+   or checked to already be ground, based on the `visit_type` flag.
+
+   The `map int mode_info` is kept as state representing
+   which unification variables are marked as ground.
+*)
+
+mode_visit_predicate : [A] visit_type -&amp;gt; argument_mode -&amp;gt; prop -&amp;gt; mode_spec A -&amp;gt; map int mode_info -&amp;gt; map int mode_info -&amp;gt; prop.
+
+mode_visit_predicate_args : [A] visit_type -&amp;gt; argument_mode -&amp;gt; args A prop -&amp;gt; mode_spec A -&amp;gt; map int mode_info -&amp;gt; map int mode_info -&amp;gt; prop.
+
+mode_visit_term, mode_visit_unifvar : [A] visit_type -&amp;gt; map int mode_info -&amp;gt; A -&amp;gt; map int mode_info -&amp;gt; prop.
+
+mode_visit_predicate VisitType ArgMode Goal Mode Map Map&#39; :-
+  refl.decompose_term Goal _ Args,
+  mode_visit_predicate_args VisitType ArgMode Args Mode Map Map&#39;.
+
+mode_visit_predicate_args VisitType ArgMode (Term :: Rest) (ArgMode :: Rest&#39;) Map Map&#39;&#39; :-
+  mode_visit_term VisitType Map Term Map&#39;,
+  mode_visit_predicate_args VisitType ArgMode Rest Rest&#39; Map&#39; Map&#39;&#39;.
+
+mode_visit_predicate_args VisitType ArgMode (Term :: Rest) (ArgMode&#39; :: Rest&#39;) Map Map&#39; when not(eq ArgMode ArgMode&#39;) :-
+  mode_visit_predicate_args VisitType ArgMode Rest Rest&#39; Map Map&#39;.
+
+mode_visit_predicate_args _ _ [] [] Map Map.
+
+(* do a structural fold through a term, calling out to
+   mode_visit_unifvar whenever we encounter a unification
+   variable. This only covers strict occurrences of unification
+   variables, as the Twelf mode checking algorithm specifies:
+   we do not recurse within the substitutions used with
+   unification variables, where we could have non-strict
+   occurrences of further unification variables. *)
+mode_visit_term VisitType Map X Map&#39; :-
+  if (refl.isunif X)
+  then (mode_visit_unifvar VisitType Map X Map&#39;)
+  else (generic.fold @(mode_visit_term VisitType) Map X Map&#39;).
+
+mode_visit_unifvar mark Map X Map&#39; :-
+  refl.decomposeunif X I _,
+  map.add_or_update Map (I, ground) Map&#39;.
+
+mode_visit_unifvar check Map X Map :-
+  refl.decomposeunif X I _,
+  if (map.find Map I ground)
+  then success
+  else (tostring X XS, log_annotation X `mode violation: variable ${XS} not ground`, failure).
+
+
+
+&amp;gt;&amp;gt; (mode_visit_predicate mark input (test_predicate (app E1 E2) B) [input, output] [] Y, refl.decomposeunif E1 I_E1 _, refl.decomposeunif E2 I_E2 _, refl.decomposeunif B I_B _) ?
+&amp;gt;&amp;gt; Yes:
+&amp;gt;&amp;gt; Y := [ (I_E2, ground), (I_E1, ground) ].
+
+&amp;gt;&amp;gt; (mode_visit_predicate mark output (test_predicate (app E1 E2) B) [input, output] [] Y, refl.decomposeunif E1 I_E1 _, refl.decomposeunif E2 I_E2 _, refl.decomposeunif B I_B _) ?
+&amp;gt;&amp;gt; Yes:
+&amp;gt;&amp;gt; Y := [ (I_B, ground) ].
+
+&amp;gt;&amp;gt; (mode_visit_predicate mark input (test_predicate (app E1 E2) B) [input, output] [] _Map, mode_visit_predicate check input (test_predicate (app E1 E2) B) [input, output] _Map Y, refl.decomposeunif E1 I_E1 _, refl.decomposeunif E2 I_E2 _, refl.decomposeunif B I_B _) ?
+&amp;gt;&amp;gt; Yes:
+&amp;gt;&amp;gt; Y := [ (I_E2, ground), (I_E1, ground) ].
+
+
+(* The main part of the mode checking algorithm is a rudimentary
+    version of the Twelf mode checking algorithm, as
+    described in the Twelf User Guide by Frank Pfenning and
+    Carsten Schürmann, at:
+
+    https://www.cs.cmu.edu/~twelf/guide-1-2/twelf_6.html#SEC31
+
+
+    For every clause:
+     - we first mark all variables within input arguments as ground
+     - we proceed to check the premises for mode correctness
+     - in each premise:
+       - we validate that all variables within input arguments are already ground
+       - we mark all variables within output arguments as ground
+     - we validate that all variables within output arguments are ground
+
+*)
+
+
+mode_check : map int mode_info -&amp;gt; clause -&amp;gt; map int mode_info -&amp;gt; prop.
+mode_check_per_mode : [A] map int mode_info -&amp;gt; clause -&amp;gt; list clause -&amp;gt; map int mode_info -&amp;gt; prop.
+
+mode_check, mode_check_rules : [A] map int mode_info -&amp;gt; prop -&amp;gt; map int mode_info -&amp;gt; prop.
+
+mode_check Map (clause Goal Premise) Map&#39;&#39;
+    when mode_declared Goal Mode :-
+  mode_visit_predicate mark input Goal Mode Map Map&#39;,
+  mode_check Map&#39; Premise Map&#39;&#39;,
+  mode_visit_predicate check output Goal Mode Map&#39;&#39; Map&#39;&#39;.
+
+mode_check Map P Map&#39; :-
+  if (refl.rules_get_applicable (mode_check_rules Map P Map&#39;) [])
+  then (tostring P PS, log_annotation P `don&#39;t know how to do mode checking for ${PS}, add a mode declaration or specialized rule`)
+  else (mode_check_rules Map P Map&#39;).
+
+mode_check_rules Map success Map.
+
+mode_check_rules Map (and P1 P2) Map&#39;&#39; :-
+  mode_check Map P1 Map&#39;,
+  mode_check Map&#39; P2 Map&#39;&#39;.
+
+mode_check_rules Map (newvar F) Map&#39; :-
+  (x:A -&amp;gt; mode_check Map (F x) Map&#39;).
+
+mode_check_rules Map (assume Clause P) Map&#39;&#39; :-
+  mode_check Map Clause _,
+  mode_check Map P Map&#39;&#39;.
+
+mode_check_rules Map P Map&#39;&#39;
+    when mode_declared P Mode :-
+  mode_visit_predicate check input P Mode Map Map&#39;,
+  mode_visit_predicate mark output P Mode Map&#39; Map&#39;&#39;.
+
+mode_check_existing_rules : A -&amp;gt; prop.
+mode_check_existing_rules Predicate :-
+  refl.rules_get Predicate Rules,
+  map (pfun Clause =&amp;gt; [Map] once(mode_check [] Clause Map)) Rules.
+
+mode_check : clause -&amp;gt; prop.
+mode_check Clause :- mode_check [] Clause _.
+
+mode_check : prop -&amp;gt; prop.
+mode_check P :- mode_check [] P _.
+
+(* Mode specifications for other predicates that we&#39;ll use. *)
+
+mode unify [input, output].
+
+mode type_of_var [input, output].
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once these analysis predicates are implemented, all we have to do
+is register them as toplevel command transformers, so that they
+will analyze all new rules and queries, and emit errors if needed:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam&#34;&gt;toplevel_command_transformer &amp;quot;mode-checker&amp;quot;
+    (cmd_newclause Clause)
+    (cmd_newclause Clause)
+  when clause.get_goal Clause Goal, mode_declared Goal _ :-
+    mode_check Clause.
+
+toplevel_command_transformer &amp;quot;mode-checker&amp;quot;
+    (cmd_query Query)
+    (cmd_query Query)
+  when mode_declared Query _ :-
+    mode_check Query.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;(* Tests *)
+
+
+type_synth_correct, type_check_correct : expr -&amp;gt; typ -&amp;gt; prop.
+
+(* We don&#39;t specify modes here to avoid triggering the
+   modes checker; instead, we write an explicit mode checking
+   test below. *)
+
+type_synth_correct X A :-
+  type_of_var X A.
+
+type_check_correct E B :-
+  type_synth_correct E A, unify A B.
+
+type_synth_correct (annot E A) A :-
+  type_check_correct E A.
+
+type_check_correct eunit tunit.
+
+type_check_correct (lambda E) (arrow A1 A2) :-
+  (x:expr -&amp;gt; type_of_var x A1 -&amp;gt; type_check_correct (E x) A2).
+
+type_synth_correct (app E1 E2) B :-
+  type_synth_correct E1 (arrow A B),
+  type_check_correct E1 A.
+
+type_synth_error1 : expr -&amp;gt; typ -&amp;gt; prop.
+type_synth_error1 (app E1 E2) B :-
+  type_synth_correct E1 (arrow A B),
+  type_check_correct E1 A&#39;.
+
+type_check_error2 : expr -&amp;gt; typ -&amp;gt; prop.
+type_check_error2 (lambda E) (arrow A1 A2) :-
+  (x:expr -&amp;gt; type_of_var x A1&#39; -&amp;gt; type_check_correct (E x) A2).
+
+with_modes : prop -&amp;gt; prop.
+with_modes P :-
+  assume_many [
+    mode type_synth_correct [input, output],
+    mode type_check_correct [input, input],
+    mode type_synth_error1 [input, output],
+    mode type_check_error2 [input, input]
+  ] P.
+
+&amp;gt;&amp;gt; (with_modes (mode_check_existing_rules type_synth_correct), with_modes(mode_check_existing_rules type_check_correct)) ?
+&amp;gt;&amp;gt; Yes.
+
+&amp;gt;&amp;gt; (with_modes (mode_check_existing_rules type_synth_error1)) ?
+&amp;gt;&amp;gt; Impossible.
+
+&amp;gt;&amp;gt; (with_modes (mode_check_existing_rules type_check_error2)) ?
+&amp;gt;&amp;gt; Impossible.
+
+%end.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let&amp;rsquo;s try this out! Repeating our &lt;code&gt;type_check&lt;/code&gt; and &lt;code&gt;type_synth&lt;/code&gt;
+predicates from earlier, mode checking does not produce any errors,
+meaning that they are mode correct. However, if we violate the given
+mode declarations, we will get the expected errors: any unification
+variables in input arguments that are found to be non-ground will be
+highlighted. You can experiment with this below, as the following
+Makam code block is editable. Try some changes that should fail mode
+checking and see what happens when you re-run Makam. For example, you
+can change the modes of &lt;code&gt;type_check&lt;/code&gt; and &lt;code&gt;type_synth&lt;/code&gt;; you can rename
+unification variables so that they are not ground, e.g. by turning the
+&lt;code&gt;type_of_var X A1&lt;/code&gt; assumption in the lambda typing rule into
+&lt;code&gt;type_of_var X A&lt;/code&gt;; you can change the &lt;code&gt;type_check&lt;/code&gt; query to violate
+the mode declaration, leaving the type argument unknown as a
+unification variable &lt;code&gt;T&lt;/code&gt;, etc.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-makam-input&#34;&gt;%open modes_checking.
+
+type_synth, type_check : expr -&amp;gt; typ -&amp;gt; prop.
+
+mode type_check [input, input].
+mode type_synth [input, output].
+
+type_synth X A :-
+  type_of_var X A.
+
+type_check E B :-
+  type_synth E A, unify A B.
+
+type_synth (annot E A) A :-
+  type_check E A.
+
+type_check eunit tunit.
+
+type_check (lambda E) (arrow A1 A2) :-
+  (x:expr -&amp;gt; type_of_var x A1 -&amp;gt; type_check (E x) A2).
+
+type_synth (app E1 E2) B :-
+  type_synth E1 (arrow A B),
+  type_check E1 A.
+
+type_check (lambda (fun x =&amp;gt; x)) (arrow tunit tunit) ?
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Of course, the mode checking algorithm here only covers a small part
+of Makam. It would need to be extended to handle, for example,
+higher-order predicates, like &lt;code&gt;map&lt;/code&gt;; predicates that can be
+used with multiple modes, like &lt;code&gt;unify&lt;/code&gt;; or predicates with
+arguments that don&amp;rsquo;t qualify either as input or output. Still, I
+believe that the approach outlined here could be generalized to
+handle these cases as well.&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;conclusion&lt;/h2&gt;
+
+&lt;p&gt;In summary, we have covered two approaches to supporting
+mode declarations in Makam: either through &lt;em&gt;runtime enforcement&lt;/em&gt; semantics, where modes are used to do a source-to-source transformation of
+our programs, so as to behave according to their mode when they
+are executed; or, through &lt;em&gt;static checking&lt;/em&gt; semantics, where any mode
+violations are directly reported to the user as errors.&lt;/p&gt;
+
+&lt;p&gt;We were able to implement both approaches within Makam itself,
+whereas typically these approaches would need to be part of the core
+of a logic programming language like Makam. We implemented these
+approaches as libraries instead, through the use of staging and
+reflection &amp;ndash; that is, we have used Makam code to inspect, analyze,
+and produce other Makam code. This is a powerful combination, and
+in future posts of this series, I would like to explore how to
+use similar ideas to implement features like macro definitions
+and functional syntax for Makam.&lt;/p&gt;</description>
+    </item>
+    
     
     
     <item>
@@ -18,7 +716,7 @@
       <pubDate>Fri, 01 May 2020 17:30:00 -0400</pubDate>
       <author>antonis DOT stampoulis AT gmail DOT com (Antonis Stampoulis)</author>
       <guid>https://astampoulis.github.io/blog/taksim-modes-makam/</guid>
-      <description>&lt;p&gt;In this post, we will explore a few design ideas related to integrating mode declarations into Makam, using bidirectional typing as an example. This feature is still in the design phase, so I&amp;rsquo;d be glad to hear comments and ideas!&lt;/p&gt;
+      <description>&lt;p&gt;In this post, we will explore a few design ideas related to integrating mode declarations into Makam, using bidirectional typing as an example. This feature is experimental, so I&amp;rsquo;d be glad to hear comments and ideas!&lt;/p&gt;
 
 &lt;p&gt;&lt;/p&gt;
 
@@ -26,7 +724,9 @@
 
 &lt;p&gt;Recommended soundtrack: &lt;a href=&#34;https://open.spotify.com/album/1Agh6GiahtO2bt4t5zLJR2&#34;&gt;Kalthoum (Alf Leila Wa Leila), by Ibrahim Maalouf&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Thoughts for this post came from reading &lt;a href=&#34;http://research.cs.queensu.ca/home/joshuad/&#34;&gt;J. Dunfield&lt;/a&gt; and &lt;a href=&#34;https://semantic-domain.blogspot.com/&#34;&gt;Neel Krishnaswami&lt;/a&gt;&amp;rsquo;s &lt;a href=&#34;https://arxiv.org/abs/1908.05839&#34;&gt;survey on bidirectional typing&lt;/a&gt;, as well as other discussions.&lt;/p&gt;
+&lt;p&gt;The taksim in the title refers to an improvised musical introduction to an known composition in a specific makam.&lt;/p&gt;
+
+&lt;p&gt;Thoughts for this post came from reading &lt;a href=&#34;https://research.cs.queensu.ca/home/jana/&#34;&gt;Jana Dunfield&lt;/a&gt; and &lt;a href=&#34;https://semantic-domain.blogspot.com/&#34;&gt;Neel Krishnaswami&lt;/a&gt;&amp;rsquo;s &lt;a href=&#34;https://arxiv.org/abs/1908.05839&#34;&gt;survey on bidirection al typing&lt;/a&gt;, as well as discussions on mode support in logic programming languages.&lt;/p&gt;
 
 &lt;p&gt;You can run the code in this post in your browser, through the
 Makam Web UI. Click on the play button on the bottom-right corner, or press Ctrl+Enter!&lt;/p&gt;
@@ -96,9 +796,9 @@ mode type_check (input input).
 &lt;ul&gt;
 &lt;li&gt;What happens if we transcribe the bidirectional system for the STLC directly? &lt;a href=&#34;#example-naively&#34;&gt;→ example, naively&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;How can we model bidirectional typing accurately? &lt;a href=&#34;#example-manually&#34;&gt;→ example, manually&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;It would be nice to be able to fix this just by adding a mode declaration for &lt;code&gt;type_synth&lt;/code&gt; and &lt;code&gt;type_check&lt;/code&gt;. Can we add mode declarations to Makam? Is there a way to do this without changing the core language? &lt;a href=&#34;#modes-in-makam&#34;&gt;→ modes in makam&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Do simple mode declarations provide enough generality? (TODO) &lt;a href=&#34;#todo&#34;&gt;→ modes in makam, take 2&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Can we turn the bidirectional recipe into a Makam program, to &amp;ldquo;bidirectionalize&amp;rdquo; an existing typing declaration? (TODO) &lt;a href=&#34;#todo&#34;&gt;→ writing recipes in makam&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;It would be nice to be able to fix this just by adding a mode declaration for &lt;code&gt;type_synth&lt;/code&gt; and &lt;code&gt;type_check&lt;/code&gt;. Can we add mode declarations to Makam? &lt;a href=&#34;#modes-in-makam&#34;&gt;→ modes in makam&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Can we handle the mode declarations nicely, without without changing the core language? &lt;a href=&#34;https://astampoulis.github.io/blog/taksim-modes-makam-2/#mode-declarations-through-command-transformers&#34;&gt;→ modes in makam, take 2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Could we do mode checking instead of enforcing a mode? &lt;a href=&#34;https://astampoulis.github.io/blog/taksim-modes-makam-2/#mode-checking&#34;&gt;→ mode checking&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&#34;example-naively&#34;&gt;example, naively&lt;/h2&gt;
@@ -113,7 +813,7 @@ type_check : expr -&amp;gt; typ -&amp;gt; prop.
 
 &lt;p&gt;As a first step, let&amp;rsquo;s look at the basic bidirectional typing rules for the simply-typed lambda calculus, and try to transcribe them directly to Makam. Following the definitions in the &lt;a href=&#34;https://arxiv.org/pdf/1908.05839&#34;&gt;survey&lt;/a&gt; paper mentioned above (Figure 1), the rules are:&lt;/p&gt;
 
-&lt;p&gt;&lt;center&gt;&lt;img src=&#34;https://astampoulis.github.io/blog/taksim-modes-bidir-spec.svg&#34; alt=&#34;Abstract syntax tree&#34; width=&#34;500&#34; /&gt;&lt;/center&gt;&lt;/p&gt;
+&lt;p&gt;&lt;center&gt;&lt;img src=&#34;https://astampoulis.github.io/blog/taksim-modes-bidir-spec.svg&#34; alt=&#34;Bidirectional typing&#34; width=&#34;500&#34; /&gt;&lt;/center&gt;&lt;/p&gt;
 
 &lt;p&gt;Transcribing them to Makam should be simple:&lt;/p&gt;
 
@@ -146,8 +846,7 @@ type_synth (app E1 E2) B :-
 &lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;&amp;gt;&amp;gt; Yes.
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;As we expect though, this does not model the bidirectional system accurately. For example,
-it is able to discover a type &lt;code&gt;T&lt;/code&gt; when we are using the type-checking judgment:&lt;/p&gt;
+&lt;p&gt;As we expect though, these rules are more general than what the bidirectional system allows. For example, nothing is preventing us from using &lt;code&gt;type_check&lt;/code&gt; with an unknown type &lt;code&gt;T&lt;/code&gt;, in which case this encoding will be able to discover a possible type:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-makam&#34;&gt;type_check (lambda (fun x =&amp;gt; x)) T ?
 &lt;/code&gt;&lt;/pre&gt;
@@ -160,7 +859,7 @@ it is able to discover a type &lt;code&gt;T&lt;/code&gt; when we are using the t
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;An accurate model of the bidirectional system should fail instead,
-as the type &lt;code&gt;T&lt;/code&gt; is unknown and can thus not be used with the
+as the type &lt;code&gt;T&lt;/code&gt; is unknown and can thus should not be used with the
 type-checking judgment.&lt;/p&gt;
 
 &lt;p&gt;So instead, let&amp;rsquo;s try to transcribe the system more accurately.&lt;/p&gt;
@@ -174,7 +873,7 @@ type_synth : expr -&amp;gt; typ -&amp;gt; prop.
 
 &lt;p&gt;To start, let us focus on just one indicative checking rule:&lt;/p&gt;
 
-&lt;p&gt;&lt;center&gt;&lt;img src=&#34;https://astampoulis.github.io/blog/taksim-modes-bidir-focused.svg&#34; alt=&#34;Abstract syntax tree&#34; width=&#34;300&#34; /&gt;&lt;/center&gt;&lt;/p&gt;
+&lt;p&gt;&lt;center&gt;&lt;img src=&#34;https://astampoulis.github.io/blog/taksim-modes-bidir-focused.svg&#34; alt=&#34;Bidirectional typing: the lambda case&#34; width=&#34;300&#34; /&gt;&lt;/center&gt;&lt;/p&gt;
 
 &lt;p&gt;To encode this rule properly, we need to make sure
 that the type &lt;code&gt;T&lt;/code&gt; of &lt;code&gt;type_check E T&lt;/code&gt; is treated as an input.
@@ -280,25 +979,9 @@ input arguments, we should use pattern matching rather than
 unification.  Is there some way that we can extend Makam to support
 this recipe?&lt;/p&gt;
 
-&lt;p&gt;Note that this will be patently different than the mode support in other logic programming languages (such as Twelf and Mercury). We will not be doing mode &lt;em&gt;checking&lt;/em&gt;, that is, a static check that a certain predicate behaves according to the specified mode. Instead, we will be &lt;em&gt;enforcing&lt;/em&gt; a mode, at a per-predicate level, by &lt;em&gt;making&lt;/em&gt; predicates behave according to their mode. This is similar to the mode support in &lt;a href=&#34;https://github.com/LPCIC/elpi/&#34;&gt;ELPI&lt;/a&gt;, for example.&lt;/p&gt;
+&lt;p&gt;Note that this will be patently different than the mode support in other logic programming languages (such as Twelf and Mercury). We will not be doing mode &lt;em&gt;checking&lt;/em&gt;, that is, a static check that a certain predicate behaves according to the specified mode. Instead, we will be &lt;em&gt;enforcing&lt;/em&gt; a mode, at a per-predicate level, by &lt;em&gt;making&lt;/em&gt; predicates behave according to their mode. This is similar to the mode support in &lt;a href=&#34;https://github.com/LPCIC/elpi/&#34;&gt;ELPI&lt;/a&gt;, for example. (In the &lt;a href=&#34;https://astampoulis.github.io/blog/taksim-modes-makam-2/#mode-checking&#34;&gt;next part&lt;/a&gt;, we will also cover how mode checking can be implemented in Makam.)&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;(* stdlib extensions required for this. will open a PR for Makam soon *)
-
-%extend refl.
-
-decompose_term : [Full Head] Full -&amp;gt; Head -&amp;gt; args Head Full -&amp;gt; prop.
-decompose_term Term Head Args :-
-  refl.headargs Term Head ArgsDyn,
-  dyn.to_args ArgsDyn Args.
-
-recompose_term : [Full Head] Head -&amp;gt; args Head Full -&amp;gt; Full -&amp;gt; prop.
-recompose_term Head Args Term when not(refl.isunif Head) :-
-  args.applyfull Head Args Term.
-
-%end.
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;%extend modes_v1.
+&lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;%extend modes_enforcing.
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Here&amp;rsquo;s the basic approach we&amp;rsquo;ll follow: we can do some meta-programming in Makam, transforming predicates that utilize a specific mode according to the recipe. We will have to perform that transformation for all rules of the relevant predicates.&lt;/p&gt;
@@ -624,21 +1307,16 @@ call the wrapper predicates recursively in the premises rather than the &lt;code
 of Makam for mode declarations to be nice. One idea there is that we
 could add a way to register &amp;ldquo;rule transformer&amp;rdquo; predicates that run
 whenever we add a new rule. This would be similar to the staging
-approach, but would have better ergonomics: we could register the mode transformation once, proceed to write all the rules
-in the normal style, and the staged transformation would happen behind
-the scenes. Still, there&amp;rsquo;s a few design questions for this feature:&lt;/p&gt;
+approach, but would have better ergonomics: we could register the mode transformation once,
+proceed to write all the rules in the normal style, and the staged transformation would happen behind
+the scenes.&lt;/p&gt;
 
-&lt;ul&gt;
-&lt;li&gt;should we run transformers retroactively for existing rules?&lt;/li&gt;
-&lt;li&gt;how would multiple transformers work out?&lt;/li&gt;
-&lt;li&gt;could we have a nice way in an IDE to switch between the pre-transformation rules and the post-transformation rules?&lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;Support for rule transformers is now merged in Makam, as of version 0.7.39.
+In the &lt;a href=&#34;https://astampoulis.github.io/blog/taksim-modes-makam-2/&#34;&gt;next part&lt;/a&gt;, we will see how we can utilize
+this to fix the issues we found with the existing methods presented above.
+We will also see a different approach for mode declarations, that will perform static &lt;em&gt;mode checking&lt;/em&gt; instead of enforcing a specific mode at runtime.&lt;/p&gt;
 
-&lt;p&gt;Still, one good thing that we found is that the mode specification part itself looks quite nice and does not need to be part of the core language. Are these kinds of mode specifications general enough though? In the next part, we will explore a generalization of the mode specifications that can cover more situations, such as higher-order predicates and predicates with mixed argument modes. We will also see if we can use the metaprogramming support of Makam to turn the &lt;em&gt;bidirectional recipe itself&lt;/em&gt; into a predicate.&lt;/p&gt;
-
-&lt;h2 id=&#34;todo&#34;&gt;todo&lt;/h2&gt;
-
-&lt;p&gt;The next part is not done yet! You can watch the &lt;a href=&#34;https://github.com/astampoulis/website-source&#34;&gt;source repository&lt;/a&gt; of this blog for updates.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://astampoulis.github.io/blog/taksim-modes-makam-2&#34;&gt;On to the second part!&lt;/a&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-makam-hidden&#34;&gt;%end.
 &lt;/code&gt;&lt;/pre&gt;
@@ -647,7 +1325,7 @@ the scenes. Still, there&amp;rsquo;s a few design questions for this feature:&lt
 &lt;hr /&gt;
 
 &lt;ol&gt;
-&lt;li id=&#34;fn:1&#34;&gt;In Makam unfortunately the usefulness of this feature is limited for programming language settings, due to the naive depth-first search procedure used. For great examples of this in a PL context, look at &lt;a href=&#34;http://io.livecode.ch/learn/gregr/icfp2017-artifact-auas7pp&#34;&gt;A Unified Approach to Solving Seven Programming Problems&lt;/a&gt; by William Byrd et al.
+&lt;li id=&#34;fn:1&#34;&gt;In Makam unfortunately the usefulness of this feature is limited for programming language settings, due to the naive depth-first search procedure used. For great examples of this in a PL context using miniKanren, look at &lt;a href=&#34;http://io.livecode.ch/learn/gregr/icfp2017-artifact-auas7pp&#34;&gt;A Unified Approach to Solving Seven Programming Problems&lt;/a&gt; by William Byrd et al.
  &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;</description>
